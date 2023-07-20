@@ -28,3 +28,16 @@ void print_array_2d(int const rows, int const cols, float const x[rows][cols]) {
   }
   printf("\n");
 }
+
+void read_sequence(char filename[], float inputArray[], int input_length) {
+  FILE *input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL){
+      printf("Error Reading File\n");
+      exit(1);
+  }
+  for (int i = 0; i < input_length; i++){
+      fscanf(input_file, "%f,", &inputArray[i] );
+  }
+  fclose(input_file);
+}

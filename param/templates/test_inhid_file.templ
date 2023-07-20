@@ -1,0 +1,8 @@
+#include "../../functional.h"
+#include "../../Connection.h"
+  
+// Weights as const array here, use pointer in configuration struct
+float const w_inhid_${type}[] = $w_inhid;
+
+// post, pre, w
+ConnectionConf const conf_${type}_inhid = {1, $hidden_size, w_inhid_${type}};

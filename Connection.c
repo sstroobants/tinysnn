@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 // Build connection
-Connection build_connection(int const post, int const pre) {
+Connection build_connection(int const pre, int const post) {
   // Connection struct
   Connection c;
 

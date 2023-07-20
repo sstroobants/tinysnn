@@ -1,0 +1,7 @@
+#include "../../Connection.h"
+
+// Weights as const array here, use pointer in configuration struct
+float const w_hidout_${type}[] = $w_hidout;
+
+// post, pre, w
+ConnectionConf const conf_${type}_hidout = {$hidden_size, 1, w_hidout_${type}};

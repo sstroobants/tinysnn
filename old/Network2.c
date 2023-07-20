@@ -127,7 +127,7 @@ void print_network(Network const *net) {
 
   // Connection input -> output
   printf("Connection weights input -> output:\n");
-  print_array_2d(net->out_size, net->in_enc_size, net->inout->w);
+//   print_array_2d(net->out_size, net->in_enc_size, net->inout->w);
 
   // Output layer
   print_neuron(net->out);

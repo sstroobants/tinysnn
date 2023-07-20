@@ -1,0 +1,1 @@
+float const conf_deriv_li_out = 0.9200000166893005f;

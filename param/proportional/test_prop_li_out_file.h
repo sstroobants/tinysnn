@@ -1,0 +1,1 @@
+float const conf_prop_li_out = 0.5f;

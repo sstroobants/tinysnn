@@ -1,9 +1,9 @@
 #pragma once
 
-// Struct that defines a connection between two layers of neurons
+// Struct that defines a connection between two layers of neurons, or input/output
 typedef struct Connection {
   // Connection shape: (post, pre)
-  int post, pre;
+  int pre, post;
   // Connection weights
   // Use a 1D array, since structs don't support variable-sized arrays
   // TODO: is this the best way to go? Would like to be able to do w[i][j]
@@ -14,15 +14,15 @@ typedef struct Connection {
 // Struct that holds the configuration (weights) of a connection
 // To be used when loading parameters from a header file
 typedef struct ConnectionConf {
-  // Connection shape: (post, pre)
-  int const post, pre;
+  // Connection shape: (pre, post)
+  int const pre, post;
   // Connection weights (1D array)
   // TODO: or actual weight array? Might be easier to specify in conf header..
   float const *w;
 } ConnectionConf;
 
 // Build connection
-Connection build_connection(int const post, int const pre);
+Connection build_connection(int const pre, int const post);
 
 // Init connection
 void init_connection(Connection *c);

@@ -1,0 +1,18 @@
+{
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "stdio.h": "c",
+        "test_connection_conf_inhid.h": "c",
+        "test_connection_conf_hidout.h": "c",
+        "test_proportional_inhid_file.h": "c",
+        "chrono": "c",
+        "random": "c",
+        "limits": "c",
+        "ranges": "c",
+        "algorithm": "c",
+        "network.h": "c",
+        "pid.h": "c",
+        "test_proportional_enc_file.h": "c",
+        "test_proportional_conf.h": "c"
+    }
+}

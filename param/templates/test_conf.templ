@@ -1,0 +1,13 @@
+#include "../../Network.h"
+
+// Include child structs
+#include "test_${type}_enc_file.h"
+#include "test_${type}_hidout_file.h"
+#include "test_${type}_inhid_file.h"
+#include "test_${type}_hid_file.h"
+#include "test_${type}_li_out_file.h"
+
+
+// in_size, hid_size, out_size, type
+// inhid, hid, hidout, out
+NetworkConf const conf_${type} = {1, $hidden_size, 1, 1, &conf_${type}_enc, &conf_${type}_inhid, &conf_${type}_hid, &conf_${type}_hidout, conf_${type}_li_out};

@@ -1,0 +1,1 @@
+float const conf_integ_li_out = 0.9816075563430786f;
