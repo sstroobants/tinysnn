@@ -122,13 +122,13 @@ float forward_network(Network *net) {
   } else {
       // Put encoded values in input of neuron-layer
     for (int i = 0; i < net->hid_size; i++) {
-        net->hid->x[i] = net->enc->out[i] * net->inhid->w[i];
+        net->hid->x[i] = net->enc->out[i] > 0 ? net->inhid->w[i] : 0.0f;
     }
   }
   forward_neuron(net->hid);
   float out_spikes = 0.0f;
   forward_connection(net->hidout, &out_spikes, net->hid->s);
-  net->out = net->out * net->tau_out + out_spikes;
+  net->out = net->out * net->tau_out + out_spikes * (1 - net->tau_out);
   return net->out;
 }
 

@@ -8,4 +8,4 @@
 
 // p_gain, i_gain, d_gain
 // prop, integ, deriv confs
-PIDConf const conf = {0.59063f, 0.06948f, 4.96210f, &conf_prop, &conf_integ, &conf_deriv};
+PIDConf const conf = {0.89321f, 0.79808f, 1.84817f, &conf_prop, &conf_integ, &conf_deriv};

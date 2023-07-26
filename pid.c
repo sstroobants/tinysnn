@@ -12,7 +12,7 @@ PID build_pid(int const in_size, int const hid_size, int const out_size) {
   
   // initialize input array
   pid.in = calloc(in_size, sizeof(*pid.in));
-  pid.out = 0.0f;
+  pid.out = calloc(3, sizeof(*pid.out));
   pid.p_gain = 1.0f;
   pid.i_gain = 0.1f;
   pid.d_gain = 0.1f;
@@ -33,6 +33,10 @@ void init_pid(PID *pid) {
   pid->in[0] = 0.0f; // error input
   pid->in[1] = 0.0f; // state input
 
+  pid->out[0] = 0.0f; // p
+  pid->out[1] = 0.0f; // i
+  pid->out[2] = 0.0f; // d
+
   // Call init functions for children
   init_network(pid->prop);
   init_network(pid->integ);
@@ -43,7 +47,9 @@ void init_pid(PID *pid) {
 void reset_pid(PID *pid) {
   pid->in[0] = 0.0f;
   pid->in[1] = 0.0f;
-  pid->out = 0.0f;
+  pid->out[0] = 0.0f;
+  pid->out[1] = 0.0f;
+  pid->out[2] = 0.0f;
   reset_network(pid->prop);
   reset_network(pid->integ);
   reset_network(pid->deriv);
@@ -66,8 +72,14 @@ void load_pid_from_header(PID *pid, PIDConf const *conf) {
 }
 
 
+// Set the inputs of the PID network with given floats
+void set_pid_input(PID *pid, float error, float state) {
+    pid->in[0] = error;
+    pid->in[1] = state;
+}
+
 // Forward pid and call forward functions for children
-float forward_pid(PID *pid) {
+void forward_pid(PID *pid) {
   // set input values in all three networks
   pid->prop->enc->in = pid->in[0];
   pid->integ->enc->in = pid->in[0];
@@ -78,8 +90,10 @@ float forward_pid(PID *pid) {
   float deriv_out = forward_network(pid->deriv) * pid->d_gain;
 
   // calculate pid output
-  pid->out = prop_out + integ_out + deriv_out;
-  return pid->out;
+  pid->out[0] = prop_out;
+  pid->out[1] = integ_out;
+  pid->out[2] = deriv_out;
+//   return pid->out;
 }
 
 
@@ -100,4 +114,5 @@ void free_pid(PID *pid) {
   free(pid->integ);
   free(pid->deriv);
   free(pid->in);
+  free(pid->out);
 }

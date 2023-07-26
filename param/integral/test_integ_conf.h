@@ -10,4 +10,4 @@
 
 // in_size, hid_size, out_size, type
 // inhid, hid, hidout, out
-NetworkConf const conf_integ = {1, 80, 1, 1, &conf_integ_enc, &conf_integ_inhid, &conf_integ_hid, &conf_integ_hidout, conf_integ_li_out};
+NetworkConf const conf_integ = {1, 80, 1, 2, &conf_integ_enc, &conf_integ_inhid, &conf_integ_hid, &conf_integ_hidout, conf_integ_li_out};

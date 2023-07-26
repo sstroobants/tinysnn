@@ -6,4 +6,4 @@ float const d_i_${type}[] = $d_i;
 float const d_v_${type}[] = $d_v;
 float const add_thresh_${type}[] = $add_thresh;
 // size,d_i, d_v, add_thresh, v_rest
-NeuronConf const conf_${type}_hid = {$hidden_size, d_i_${type}, d_v_${type}, add_thresh_${type}, 0.0f};
+NeuronConf const conf_${type}_hid = {$hidden_size, add_thresh_${type}, d_i_${type}, d_v_${type}, 0.0f};

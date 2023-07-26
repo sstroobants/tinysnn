@@ -6,7 +6,7 @@
 typedef struct PID {
   // Two place holders: input array and output
   float *in;
-  float out;
+  float *out;
   float p_gain, i_gain, d_gain;
   // Proportional network
   Network *prop;
@@ -48,6 +48,8 @@ void free_pid(PID *pid);
 // Print network parameters (for debugging purposes)
 void print_pid(PID const *pid);
 
+void set_pid_input(PID *pid, float error, float state);
+
 // Forward network and call forward functions for children
 // Encoding and decoding inside
-float forward_pid(PID *pid);
+void forward_pid(PID *pid);

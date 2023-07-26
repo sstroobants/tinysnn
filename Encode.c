@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 // Build neuron
 Encode build_encoding(int const size) {
@@ -24,7 +23,7 @@ Encode build_encoding(int const size) {
   e.beta = 0.0f;
 
   // Set seed for random generator
-  init_genrand(time(NULL));
+  init_genrand(12423534895);
 
   return e;
 }

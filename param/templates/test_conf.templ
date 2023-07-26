@@ -10,4 +10,4 @@
 
 // in_size, hid_size, out_size, type
 // inhid, hid, hidout, out
-NetworkConf const conf_${type} = {1, $hidden_size, 1, 1, &conf_${type}_enc, &conf_${type}_inhid, &conf_${type}_hid, &conf_${type}_hidout, conf_${type}_li_out};
+NetworkConf const conf_${type} = {1, $hidden_size, 1, ${type_id}, &conf_${type}_enc, &conf_${type}_inhid, &conf_${type}_hid, &conf_${type}_hidout, conf_${type}_li_out};

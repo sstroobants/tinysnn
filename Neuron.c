@@ -54,7 +54,7 @@ void init_neuron(Neuron *n) {
     n->th_base[i] = 1.0f;
     // Threshold state
     n->t_s[i] = 0.0f;
-    n->add_thresh[i] = 0.05f;
+    n->add_thresh[i] = 0.001f;
     n->th_bound[i] = n->th_base[i] / n->add_thresh[i];
     // Spikes
     n->s[i] = 0.0f;
@@ -123,7 +123,7 @@ void forward_neuron(Neuron *n) {
         if (n->v[i] >= n->th[i]) {
             n->s[i] = 1.0f;
             n->v[i] = n->v[i] - n->th[i];
-            n->s_count += 1;
+            // n->s_count += 1; # doing nothing with this now, remove to prevent overflow
         } else {
             n->s[i] = 0.0f;
         }
@@ -158,6 +158,8 @@ void print_neuron(Neuron const *n) {
   print_array_1d(n->size, n->v);
   printf("Threshold:\n");
   print_array_1d(n->size, n->th);
+  printf("Threshold bounds:\n");
+  print_array_1d(n->size, n->th_bound);
   printf("Spikes:\n");
   print_array_1d_bool(n->size, n->s);
   printf("Decay constants:\n");

@@ -14,13 +14,13 @@ def create_from_template(template_filename, output_filename, params):
 
 
 # Load network
-state_dict = torch.load(f"param/models/model.pt")
-for name in state_dict.keys():
-    print(name)
+state_dict = torch.load(f"param/models/model_v2.pt")
+# for name in state_dict.keys():
+#     print(name, state_dict[name])
 hidden_size = state_dict["proportional.l1.neuron.leak_i"].size()[0]
 hidden_size_deriv = state_dict["derivative.l1.neuron.leak_i"].size()[0] + state_dict["derivative.l2.neuron.leak_i"].size()[0]
-state_dict['alpha_param'] = 0.3
-state_dict['beta_param'] = 0.9
+state_dict['alpha_param'] = 0.5
+state_dict['beta_param'] = 0.7
 print('ALPHA AND BETA ARE NOT YET TAKEN FROM MODEL')
 
 ################### test_pid_conf
@@ -39,7 +39,8 @@ create_from_template(pid_conf_template, pid_conf_out, pid_conf_params)
 ################### test_proportional_conf
 prop_conf_params = {
     'hidden_size': f'{hidden_size}',
-    'type': 'prop'
+    'type': 'prop',
+    'type_id': 1
 }
 prop_conf_template = 'param/templates/test_conf.templ'
 prop_conf_out = 'param/proportional/test_prop_conf.h'
@@ -130,7 +131,8 @@ create_from_template(prop_li_out_template, prop_li_out_out, prop_li_out_params)
 ################### test_integral_conf
 integ_conf_params = {
     'hidden_size': f'{hidden_size}',
-    'type': 'integ'
+    'type': 'integ',
+    'type_id': 2
 }
 integ_conf_template = 'param/templates/test_conf.templ'
 integ_conf_out = 'param/integral/test_integ_conf.h'
@@ -221,7 +223,8 @@ create_from_template(integ_li_out_template, integ_li_out_out, integ_li_out_param
 ################### test_derivative_conf
 deriv_conf_params = {
     'hidden_size': f'{hidden_size_deriv}',
-    'type': 'deriv'
+    'type': 'deriv',
+    'type_id': 1
 }
 deriv_conf_template = 'param/templates/test_conf.templ'
 deriv_conf_out = 'param/derivative/test_deriv_conf.h'
@@ -290,10 +293,10 @@ create_from_template(deriv_hidout_template, deriv_hidout_out, deriv_hidout_param
 w_inhid_string = '{'
 for i in range(state_dict['derivative.fast_weights'].size()[0]):
     w_inhid_string += f"{state_dict['derivative.fast_weights'][i].item():2f}f, "
-    w_inhid_string += f"{-state_dict['derivative.fast_weights'][i].item():2f}f, "
+    w_inhid_string += f"{state_dict['derivative.fast_weights'][i].item():2f}f, "
 for i in range(state_dict['derivative.slow_weights'].size()[0]):
     w_inhid_string += f"{state_dict['derivative.slow_weights'][i].item():2f}f, "
-    w_inhid_string += f"{-state_dict['derivative.slow_weights'][i].item():2f}f, "
+    w_inhid_string += f"{state_dict['derivative.slow_weights'][i].item():2f}f, "
 w_inhid_string = w_inhid_string[:-2] + '}'
 
 deriv_inhid_params = {
