@@ -6,11 +6,11 @@
 // Struct that defines a network of two spiking layers
 typedef struct NetworkController {
   // Input, encoded input, hidden and output layer sizes
-  int in_size, enc_size, hid_size, out_size;
+  int in_size, enc_size, hid_size, hid2_size, out_size;
   // Type (1: LIF, 2: InputALIF, ...)
   int type;
   // placeholder for input
-  float *in;
+  float *in, *hid2_in;
   // placeholder for output and output decay
   float *out;
   float tau_out;
@@ -24,15 +24,20 @@ typedef struct NetworkController {
   Connection *hidhid;
   // Hidden neurons
   Neuron *hid;
-  // Connection hidden -> output
-  Connection *hidout;
+  // Connection hidden -> hidden 2
+  Connection *hidhid2;
+  // Connection hidden 2 -> hidden 2
+  Connection *hid2hid2;
+  // Hidden 2 neurons
+  Neuron *hid2;
+  Connection *hid2out;
 } NetworkController;
 
 // Struct that holds the configuration of a two-layer network
 // To be used when loading parameters from a header file
 typedef struct NetworkControllerConf {
   // Input, encoded input, hidden and output layer sizes
-  int const in_size, enc_size, hid_size, out_size;
+  int const in_size, enc_size, hid_size, hid2_size, out_size;
   // Type
   int const type;
   // Encoding input -> encoding layer
@@ -45,14 +50,20 @@ typedef struct NetworkControllerConf {
   ConnectionConf const *hidhid;
   // Hidden neurons
   NeuronConf const *hid;
+  // Connection hidden -> hidden 2
+  ConnectionConf const *hidhid2;
+  // Recurrent connection hidden 2 -> hidden 2
+  ConnectionConf const *hid2hid2;
+  // Hidden 2 neurons
+  NeuronConf const *hid2;
   // Connection hidden -> output
-  ConnectionConf const *hidout;
+  ConnectionConf const *hid2out;
   // Output decay
   const float tau_out;
 } NetworkControllerConf;
 
 // Build network: calls build functions for children
-NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const out_size);
+NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const hid2_size, int const out_size);
 
 // Init network: calls init functions for children
 void init_network(NetworkController *net);

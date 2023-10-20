@@ -39,6 +39,8 @@ void load_connection_from_header(Connection *c, ConnectionConf const *conf) {
   if ((c->pre != conf->pre) || (c->post != conf->post)) {
     printf("Connection has a different shape than specified in the "
            "ConnectionConf!\n");
+    printf("Should be %i and %i but was %i and %i\n", conf->pre, conf->post,
+           c->pre, c->post);
     exit(1);
   }
   // Loop over weights
@@ -62,7 +64,6 @@ void free_connection(Connection *c) {
 void forward_connection(Connection *c, float x[], float const s[]) {
   // Loop over weights and multiply with spikes
   for (int i = 0; i < c->post; i++) {
-    // initialize output at zero
     for (int j = 0; j < c->pre; j++) {
       x[i] += c->w[i * c->pre + j] * s[j];
     }

@@ -14,12 +14,17 @@ def create_from_template(template_filename, output_filename, params):
             f_out.write(result)
 
 def create_connection_from_template(name, state_dict, state_name):
-    input_size = state_dict[state_name].size()[1]
-    output_size = state_dict[state_name].size()[0]
+    weights = state_dict[state_name]
+    create_connection_from_template_with_weights(name, weights)
+
+
+def create_connection_from_template_with_weights(name, weights):
+    input_size = weights.size()[1]
+    output_size = weights.size()[0]
     weights_string = '{'
-    for i in range(state_dict[state_name].size()[0]):
-        for j in range(state_dict[state_name].size()[1]):
-            weights_string += f"{state_dict[state_name][i, j].item():2f}f, "
+    for i in range(weights.size()[0]):
+        for j in range(weights.size()[1]):
+            weights_string += f"{weights[i, j].item():2f}f, "
     weights_string = weights_string[:-2] + '}'
 
     params = {
