@@ -1,3 +1,10 @@
+# Pytorch models
+*.pt
+
+# headers in the param folder
+param/*/*.h
+param/*h
+
 # Prerequisites
 *.d
 

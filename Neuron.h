@@ -38,7 +38,7 @@ typedef struct NeuronConf {
   // Neuron layer size
   int const size;
   // Constant for threshold adaptation
-  float const *add_thresh;
+  // float const *add_thresh;
   // Constants for decay of voltage
   float const *d_i, *d_v;
   // Constants for resetting voltage and threshold

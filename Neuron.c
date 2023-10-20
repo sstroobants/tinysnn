@@ -95,7 +95,7 @@ void load_neuron_from_header(Neuron *n, NeuronConf const *conf) {
     n->d_i[i] = conf->d_i[i];
     n->d_v[i] = conf->d_v[i];
     // Constant for threshold adaptation
-    n->add_thresh[i] = conf->add_thresh[i];
+    // n->add_thresh[i] = conf->add_thresh[i];
     n->th_bound[i] = n->th_base[i] / n->add_thresh[i];
   }
   // Constant for resetting voltage
@@ -116,13 +116,16 @@ void forward_neuron(Neuron *n) {
     for (int i = 0; i < n->size; i++) {
         // update current
         n->i[i] = n->i[i] * n->d_i[i] + n->x[i];
+        // reset input
+        n->x[i] = 0.0f;
         // update voltage
         n->v[i] = (n->v[i] - n->v_rest) * n->d_v[i] + n->i[i];
         // check for spike, possibly reset membrane potential and update spike count
-        // TODO: NOW ONLY SOFT RESET, MAKE CONFIGURABLE?
+        // TODO: NOW ONLY HARD RESET, MAKE CONFIGURABLE?
         if (n->v[i] >= n->th[i]) {
             n->s[i] = 1.0f;
-            n->v[i] = n->v[i] - n->th[i];
+            // n->v[i] = n->v[i] - n->th[i];
+            n->v[i] = n->v_rest;
             // n->s_count += 1; # doing nothing with this now, remove to prevent overflow
         } else {
             n->s[i] = 0.0f;
