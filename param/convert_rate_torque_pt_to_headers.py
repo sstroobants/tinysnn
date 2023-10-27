@@ -6,7 +6,7 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    rate_state_dict = torch.load(f"param/models/model_rate_controller_v3.pt")
+    rate_state_dict = torch.load(f"param/models/model_rate_controller_v4.pt")
     torque_state_dict = torch.load(f"param/models/model_torque_controller.pt")
 
     rate_hidden_size = rate_state_dict["enc.neuron.leak_i"].size()[0]
@@ -63,7 +63,8 @@ if __name__ == "__main__":
     ################### test_controller_li_out
 
     li_out_params = {
-        'leak': f"{torque_state_dict['p_out.neuron.leak_v'][0].item()}",
+        # 'leak': f"{torque_state_dict['p_out.neuron.leak_v'][0].item()}",
+        'leak': 0.0,
         'type': "controller"
     }
     li_out_template = 'param/templates/test_li_out_file.templ'
