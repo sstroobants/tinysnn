@@ -7,8 +7,6 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 if __name__ == "__main__": 
     # Load network
     rate_state_dict = torch.load(f"param/models/model_rate_controller.pt")
-    torque_state_dict = torch.load(f"param/models/model_torque_controller.pt")
-
     rate_hidden_size = rate_state_dict["enc.neuron.leak_i"].size()[0]
 
     ############# -- CONTROLLER -- #################################

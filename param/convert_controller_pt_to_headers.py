@@ -6,7 +6,7 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    state_dict = torch.load(f"param/models/model_rate_controller.pt")
+    state_dict = torch.load(f"param/models/model_rate_controller_v4.pt")
 
     for name in state_dict.keys():
         print(name, state_dict[name])
