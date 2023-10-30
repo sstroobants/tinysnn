@@ -4,6 +4,7 @@
 # headers in the param folder
 param/*/*.h
 param/*h
+param/__pycache__/
 
 # Prerequisites
 *.d
