@@ -6,7 +6,7 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    rate_state_dict = torch.load(f"param/models/model_rate_controller_v3.pt") # working combination
+    rate_state_dict = torch.load(f"param/models/model_rate_gyro_controller.pt") # gyro combination
     torque_state_dict = torch.load(f"param/models/model_torque_controller.pt")
 
     rate_hidden_size = rate_state_dict["enc.neuron.leak_i"].size()[0]
@@ -46,9 +46,11 @@ if __name__ == "__main__":
     ################### test_controller_hidhid2_file
     N = controller_conf_params['hidden2_size']
     M = controller_conf_params['hidden_size']
-    new_weights = torch.zeros([N, M + 2])
-    new_weights[:, 2:] = torch.mm(torque_state_dict['rec.ff.weight'][:, 2:], rate_state_dict['readout.weight'])
-    new_weights[:, :2] = torque_state_dict['rec.ff.weight'][:, :2]
+    # new_weights = torch.zeros([N, M + 2])
+    new_weights = torch.zeros([N, M])
+    new_weights = torch.mm(torque_state_dict['rec.ff.weight'], rate_state_dict['readout.weight'])
+    # new_weights[:, 2:] = torch.mm(torque_state_dict['rec.ff.weight'][:, 2:], rate_state_dict['readout.weight'])
+    # new_weights[:, :2] = torque_state_dict['rec.ff.weight'][:, :2]
     create_connection_from_template_with_weights('hidhid2', new_weights)
 
     ################### test_controller_hid2hid2_file

@@ -30,7 +30,7 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   // Allocate memory for input placeholders and underlying
   // neurons and connections
   net.in = calloc(in_size, sizeof(*net.in));
-  net.hid2_in = calloc(hid2_size + 2, sizeof(*net.hid2_in));
+  net.hid2_in = calloc(hid2_size, sizeof(*net.hid2_in));
   net.inenc = malloc(sizeof(*net.inenc));
   net.enc = malloc(sizeof(*net.enc));
   net.enchid = malloc(sizeof(*net.enchid));
@@ -48,7 +48,7 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   *net.enchid = build_connection(enc_size, hid_size);
   *net.hidhid = build_connection(hid_size, hid_size);
   *net.hid = build_neuron(hid_size);
-  *net.hidhid2 = build_connection(hid_size + 2, hid2_size);
+  *net.hidhid2 = build_connection(hid_size, hid2_size);
   *net.hid2hid2 = build_connection(hid2_size, hid2_size);
   *net.hid2 = build_neuron(hid2_size);
   *net.hid2out = build_connection(hid2_size, out_size);
@@ -126,8 +126,8 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
 // Set the inputs of the controller network with given floats
 void set_network_input(NetworkController *net, float inputs[]) {
     net->in = inputs;
-    net->hid2_in[0] = inputs[0];
-    net->hid2_in[1] = inputs[1];
+    // net->hid2_in[0] = inputs[0];
+    // net->hid2_in[1] = inputs[1];
 }
 
 
@@ -140,10 +140,10 @@ float* forward_network(NetworkController *net) {
   forward_connection(net->enchid, net->hid->x, net->enc->s);
   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
-  for (int i = 0; i < net->hid2_size; i++) {
-    net->hid2_in[i + 2] = net->hid->s[i];
-  }
-  forward_connection(net->hidhid2, net->hid2->x, net->hid2_in);
+//   for (int i = 0; i < net->hid2_size; i++) {
+//     net->hid2_in[i] = net->hid->s[i];
+//   }
+  forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
   forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
   forward_neuron(net->hid2);
 //   this could be initialized at init, is faster

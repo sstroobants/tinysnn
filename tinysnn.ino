@@ -76,6 +76,8 @@ void setOutputMessage(void)
 {
     myserial_control_out.torque_x = controller.out[0] * 20000;
     myserial_control_out.torque_y = controller.out[1] * 20000;
+    myserial_control_out.x_integ = controller.out[2];
+    myserial_control_out.y_integ = controller.out[3];
 }
 
 void sendCrazyflie(void)
