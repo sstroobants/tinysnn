@@ -33,9 +33,11 @@ bool receiving = true;
 #define DEBUG_serial Serial
 #define DEBUG_serial_baud 115200
 
-// -------------------------- PID DEFINED VARIABLES-------------------------------
+// -------------------------- CONTROL DEFINED VARIABLES-------------------------------
 elapsedMicros timer_count_main = 0;
 NetworkController controller;
+float roll_integ = 0.0f;
+float pitch_integ = 0.0f;
 
 // -------------------------- INPUT DEFINED VARIABLES-----------------------------
 float gyro_x = 0.0f;
@@ -76,6 +78,10 @@ void setOutputMessage(void)
 {
     myserial_control_out.torque_x = controller.out[0] * 20;
     myserial_control_out.torque_y = controller.out[1] * 20;
+    // myserial_control_out.x_integ = roll_integ * 20;
+    // myserial_control_out.y_integ = pitch_integ * 20;
+    myserial_control_out.x_integ = controller.out[2];
+    myserial_control_out.y_integ = controller.out[3];
 }
 
 void sendCrazyflie(void)
@@ -142,7 +148,7 @@ void setup(void)
 
 
     //////////////////Initialize controller network
-    controller = build_network(8, 100, 100, 2);
+    controller = build_network(8, 100, 100, 4);
     init_network(&controller);
 
     // Load network parameters from header file and reset
@@ -175,8 +181,12 @@ void loop(void)
         // DEBUG_serial.write("PID step\n");
         if (myserial_control_in.thrust == 0.0f) {
           reset_network(&controller);
+          roll_integ = 0.0f;
+          pitch_integ = 0.0f;
         }
         forward_network(&controller);
+        roll_integ += controller.out[0] - controller.out[2];
+        pitch_integ += controller.out[1] - controller.out[3];
 
         // Store output message to be sent back to CF
         setOutputMessage();
