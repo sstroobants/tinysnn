@@ -148,7 +148,7 @@ void setup(void)
 
 
     //////////////////Initialize controller network
-    controller = build_network(8, 100, 100, 4);
+    controller = build_network(8, 80, 80, 4);
     init_network(&controller);
 
     // Load network parameters from header file and reset
