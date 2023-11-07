@@ -76,8 +76,8 @@ void setOutputMessage(void)
 {
     myserial_control_out.torque_x = controller.out[0] * 20000;
     myserial_control_out.torque_y = controller.out[1] * 20000;
-    myserial_control_out.x_integ = controller.out[2];
-    myserial_control_out.y_integ = controller.out[3];
+    // myserial_control_out.x_integ = controller.out[2];
+    // myserial_control_out.y_integ = controller.out[3];
 }
 
 void sendCrazyflie(void)
@@ -144,7 +144,7 @@ void setup(void)
 
 
     //////////////////Initialize controller network
-    controller = build_network(8, 100, 100, 80, 2);
+    controller = build_network(8, 80, 80, 80, 2);
     init_network(&controller);
 
     // Load network parameters from header file and reset
