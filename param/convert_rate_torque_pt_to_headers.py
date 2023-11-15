@@ -48,7 +48,8 @@ if __name__ == "__main__":
     M = controller_conf_params['hidden_size']
     # new_weights = torch.zeros([N, M + 2])
     new_weights = torch.zeros([N, M])
-    new_weights = torch.mm(torque_state_dict['rec.ff.weight'], rate_state_dict['readout.weight'])
+    # Rate state dict needs to be reordered to match correct input order. If retrained, this can be fixed. 
+    new_weights = torch.mm(torque_state_dict['rec.ff.weight'], rate_state_dict['readout.weight'][[2, 3, 0, 1], :])
     # new_weights[:, 2:] = torch.mm(torque_state_dict['rec.ff.weight'][:, 2:], rate_state_dict['readout.weight'])
     # new_weights[:, :2] = torque_state_dict['rec.ff.weight'][:, :2]
     create_connection_from_template_with_weights('hidhid2', new_weights)
