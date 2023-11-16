@@ -12,6 +12,9 @@ Neuron build_neuron(int const size) {
   // Set size
   n.size = size;
 
+  // Set type (default is hard-reset)
+  n.type = 1;
+
   // Allocate memory for arrays: inputs, current, voltage, threshold, spikes, trace
   // No need for type casting
   n.x = calloc(size, sizeof(*n.x));
@@ -100,6 +103,7 @@ void load_neuron_from_header(Neuron *n, NeuronConf const *conf) {
   }
   // Constant for resetting voltage
   n->v_rest = conf->v_rest;
+  n->type = conf->type;
 }
 
 // get the thresholds based on threshold state and base threshold
@@ -125,7 +129,11 @@ void forward_neuron(Neuron *n) {
         if (n->v[i] >= n->th[i]) {
             n->s[i] = 1.0f;
             // n->v[i] = n->v[i] - n->th[i];
-            n->v[i] = n->v_rest;
+            if (n->type == 1) {
+                n->v[i] = n->v_rest;
+            } else if (n->type == 2) {
+                n->v[i] = n->v[i] - n->th[i];
+            }
             // n->s_count += 1; # doing nothing with this now, remove to prevent overflow
         } else {
             n->s[i] = 0.0f;

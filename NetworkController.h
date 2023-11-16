@@ -6,13 +6,14 @@
 // Struct that defines a network of two spiking layers
 typedef struct NetworkController {
   // Input, encoded input, hidden and output layer sizes
-  int in_size, enc_size, hid_size, out_size;
+  int in_size, enc_size, hid_size, integ_size, out_size;
   // Type (1: LIF, 2: InputALIF, ...)
   int type;
   // placeholder for input
   float *in;
   // placeholder for output and output decay
   float *out;
+  float *integ_out;
   float tau_out;
   // Encoding input -> encoding layer
   Connection *inenc;
@@ -26,13 +27,17 @@ typedef struct NetworkController {
   Neuron *hid;
   // Connection hidden -> output
   Connection *hidout;
+  // Connection hidden -> integ
+  Connection *hidinteg;
+  // Integral neurons
+  Neuron *integ;
 } NetworkController;
 
 // Struct that holds the configuration of a two-layer network
 // To be used when loading parameters from a header file
 typedef struct NetworkControllerConf {
   // Input, encoded input, hidden and output layer sizes
-  int const in_size, enc_size, hid_size, out_size;
+  int const in_size, enc_size, hid_size, integ_size, out_size;
   // Type
   int const type;
   // Encoding input -> encoding layer
@@ -47,12 +52,16 @@ typedef struct NetworkControllerConf {
   NeuronConf const *hid;
   // Connection hidden -> output
   ConnectionConf const *hidout;
+  // Connection hidden -> integ
+  ConnectionConf const *hidinteg;
+  // Integral neurons
+  NeuronConf const *integ;
   // Output decay
   const float tau_out;
 } NetworkControllerConf;
 
 // Build network: calls build functions for children
-NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const out_size);
+NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const integ_size, int const out_size);
 
 // Init network: calls init functions for children
 void init_network(NetworkController *net);

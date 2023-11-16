@@ -10,7 +10,7 @@
 #include <string.h>
 
 // Build network: calls build functions for children
-NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const out_size) {
+NetworkController build_network(int const in_size, int const enc_size, int const hid_size, int const integ_size, int const out_size) {
   // Network struct
   NetworkController net;
 
@@ -35,7 +35,10 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   net.hidhid = malloc(sizeof(*net.hidhid));
   net.hid = malloc(sizeof(*net.hid));
   net.hidout = malloc(sizeof(*net.hidout));
+  net.hidinteg = malloc(sizeof(*net.hidinteg));
+  net.integ = malloc(sizeof(*net.integ));
   net.out = calloc(out_size, sizeof(*net.out));
+  net.integ_out = calloc(2, sizeof(*net.integ_out));
 
   // Call build functions for underlying neurons and connections
   *net.inenc = build_connection(in_size, enc_size);
@@ -44,6 +47,8 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   *net.hidhid = build_connection(hid_size, hid_size);
   *net.hid = build_neuron(hid_size);
   *net.hidout = build_connection(hid_size, out_size);
+  *net.hidinteg = build_connection(hid_size, integ_size);
+  *net.integ = build_neuron(integ_size);
 
   return net;
 }
@@ -57,6 +62,7 @@ void init_network(NetworkController *net) {
   init_connection(net->hidhid);
   init_neuron(net->hid);
   init_connection(net->hidout);
+  init_connection(net->hidinteg);
 }
 
 // Reset network: calls reset functions for children
@@ -70,6 +76,7 @@ void reset_network(NetworkController *net) {
   reset_connection(net->hidhid);
   reset_neuron(net->hid);
   reset_connection(net->hidout);
+  reset_connection(net->hidinteg);
 }
 
 // Load parameters for network from header file and call load functions for
@@ -77,7 +84,10 @@ void reset_network(NetworkController *net) {
 void load_network_from_header(NetworkController *net, NetworkControllerConf const *conf) {
   // Check shapes
   if ((net->in_size != conf->in_size) ||
-      (net->hid_size != conf->hid_size) || (net->out_size != conf->out_size)) {
+      (net->enc_size != conf->enc_size) ||
+      (net->hid_size != conf->hid_size) || 
+      (net->out_size != conf->out_size) ||
+      (net->integ_size != conf->integ_size)) {
     printf(
         "Network has a different shape than specified in the NetworkConf!\n");
     exit(1);
@@ -97,6 +107,8 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
   load_neuron_from_header(net->hid, conf->hid);
   // Connection hidden -> output
   load_connection_from_header(net->hidout, conf->hidout);
+  // Connection hiddel -> integ
+  load_connection_from_header(net->hidinteg, conf->hidinteg);
   // store output decay
   net->tau_out = conf->tau_out;
 }
@@ -123,9 +135,14 @@ float* forward_network(NetworkController *net) {
     out_spikes[i] = 0.0f;
   }
   forward_connection(net->hidout, &out_spikes, net->hid->s);
+  forward_connection(net->hidinteg, net->integ->x, net->hid->s);
+  forward_neuron(net->integ);
+  
   for (int i = 0; i < net->out_size; i++) {
     net->out[i] = net->out[i] * net->tau_out + out_spikes[i] * (1 - net->tau_out);
   }
+  net->integ_out[0] = net->integ_out[0] * 0.9 + (net->integ->s[0] - net->integ->s[1]) * (1 - net->tau_out);
+  net->integ_out[1] = net->integ_out[1] * 0.9 + (net->integ->s[2] - net->integ->s[3]) * (1 - net->tau_out);
   return net->out;
 }
 
@@ -161,6 +178,9 @@ void free_network(NetworkController *net) {
   free_connection(net->hidhid);
   free_neuron(net->hid);
   free_connection(net->hidout);
+  free_connection(net->hidinteg);
+  free_neuron(net->integ);
+
   // calloc() was used for input placeholders and underlying neurons and
   // connections
   free(net->inenc);
@@ -169,6 +189,10 @@ void free_network(NetworkController *net) {
   free(net->hidhid);
   free(net->hid);
   free(net->hidout);
+  free(net->hidinteg);
+  free(net->integ);
   free(net->in);
+  free(net->integ_out);
   free(net->out);
+
 }

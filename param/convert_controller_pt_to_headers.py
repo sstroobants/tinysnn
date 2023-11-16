@@ -1,7 +1,7 @@
 from string import Template
 import torch
 
-from convert_pt_utils import create_from_template, create_connection_from_template, create_neuron_from_template
+from convert_pt_utils import create_from_template, create_connection_from_template, create_neuron_from_template, create_softreset_integrator_from_template
 
 
 if __name__ == "__main__": 
@@ -19,6 +19,7 @@ if __name__ == "__main__":
         'input_size': state_dict["enc.ff.weight"].size()[1],
         'encoding_size': state_dict["enc.ff.weight"].size()[0],
         'hidden_size': state_dict["rec.ff.weight"].size()[0],
+        'integ_size': 4,
         'output_size': state_dict["readout.weight"].size()[0],
         'type': 1,
     }
@@ -44,6 +45,12 @@ if __name__ == "__main__":
 
     ################### test_controller_hidout_file
     create_connection_from_template('hidout', state_dict, 'readout.weight')
+
+    ################### test_controller_hidinteg_file
+    create_connection_from_template('hidinteg', state_dict)
+
+    ################### test_controller_integ_file
+    create_softreset_integrator_from_template('integ')
 
     ################### test_controller_li_out
 

@@ -6,6 +6,8 @@
 typedef struct Neuron {
   // Neuron layer size
   int size;
+  // Type (1: hard-reset, 2: soft-reset, ...)
+  int type;
   // Inputs
   float *x;
   // Currents
@@ -37,6 +39,8 @@ typedef struct Neuron {
 typedef struct NeuronConf {
   // Neuron layer size
   int const size;
+  // Type
+  int const type;
   // Constant for threshold adaptation
   // float const *add_thresh;
   // Constants for decay of voltage
