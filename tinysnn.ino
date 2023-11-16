@@ -78,10 +78,10 @@ void setOutputMessage(void)
 {
     myserial_control_out.torque_x = controller.out[0] * 20;
     myserial_control_out.torque_y = controller.out[1] * 20;
-    // myserial_control_out.x_integ = roll_integ * 20;
-    // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = controller.out[2];
-    myserial_control_out.y_integ = controller.out[3];
+    myserial_control_out.x_integ = roll_integ * 20;
+    myserial_control_out.y_integ = pitch_integ * 20;
+    // myserial_control_out.x_integ = controller.out[2];
+    // myserial_control_out.y_integ = controller.out[3];
 }
 
 void sendCrazyflie(void)
@@ -185,8 +185,8 @@ void loop(void)
           pitch_integ = 0.0f;
         }
         forward_network(&controller);
-        roll_integ += controller.out[0] - controller.out[2];
-        pitch_integ += controller.out[1] - controller.out[3];
+        roll_integ += controller.out[0] - 5 * controller.out[2];
+        pitch_integ += controller.out[1] + 5 * controller.out[3];
 
         // Store output message to be sent back to CF
         setOutputMessage();
