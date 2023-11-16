@@ -177,13 +177,15 @@ void loop(void)
         // DEBUG_serial.write("Setting input message\n");
         setInputMessage();
 
-        // Forward network
-        // DEBUG_serial.write("PID step\n");
+        // Reset network if thrust command is zero
+        // TODO: Find better solution, otherwise network might be reset mid flight
         if (myserial_control_in.thrust == 0.0f) {
           reset_network(&controller);
           roll_integ = 0.0f;
           pitch_integ = 0.0f;
         }
+
+        // Forward network
         forward_network(&controller);
         roll_integ += controller.out[0] - 5 * controller.out[2];
         pitch_integ += controller.out[1] + 5 * controller.out[3];
@@ -195,7 +197,3 @@ void loop(void)
         sendCrazyflie();
     }
 }
-
-
-
-
