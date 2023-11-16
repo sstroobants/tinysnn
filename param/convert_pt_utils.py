@@ -1,6 +1,8 @@
 from string import Template
 import torch
 
+
+
 def create_from_template(template_filename, output_filename, params):
     '''
     Take template file and the parameters to be exchanged, fill in and write to file.
@@ -13,6 +15,26 @@ def create_from_template(template_filename, output_filename, params):
         with open(output_filename, 'w') as f_out:
             f_out.write(result)
 
+def create_connection_from_template_with_weights(name, weights):
+    input_size = weights.size()[1]
+    output_size = weights.size()[0]
+    weights_string = '{'
+    for i in range(weights.size()[0]):
+        for j in range(weights.size()[1]):
+            weights_string += f"{weights[i, j].item():2f}f, "
+    weights_string = weights_string[:-2] + '}'
+
+    params = {
+        'input_size': f'{input_size}',
+        'output_size': f'{output_size}',
+        'weights': f'{weights_string}',
+        'name': name
+    }
+    template = 'param/templates/test_connection_file.templ'
+    out = f'param/controller/test_controller_{name}_file.h'
+
+    create_from_template(template, out, params)
+    
 def create_connection_from_template(name, state_dict, state_name):
     input_size = state_dict[state_name].size()[1]
     output_size = state_dict[state_name].size()[0]

@@ -1,7 +1,7 @@
 from string import Template
 import torch
 
-from convert_pt_utils import create_from_template, create_connection_from_template, create_neuron_from_template, create_softreset_integrator_from_template
+from convert_pt_utils import create_from_template, create_connection_from_template, create_neuron_from_template, create_softreset_integrator_from_template, create_connection_from_template_with_weights
 
 
 if __name__ == "__main__": 
@@ -47,7 +47,19 @@ if __name__ == "__main__":
     create_connection_from_template('hidout', state_dict, 'readout.weight')
 
     ################### test_controller_hidinteg_file
-    create_connection_from_template('hidinteg', state_dict)
+    N = controller_conf_params['integ_size']
+    M = controller_conf_params['hidden_size']
+    # new_weights = torch.zeros([N, M + 2])
+    new_weights = torch.zeros([N, M])
+    # Rate state dict needs to be reordered to match correct input order. If retrained, this can be fixed. 
+    integ_weights = torch.tensor([[1, 0, -5, 0], 
+                                  [-1, 0, 5, 0],
+                                  [0, 1, 0, 5],
+                                  [0, -1, 0,-5]])
+    new_weights = torch.mm(integ_weights, state_dict['readout.weight'])
+    # new_weights[:, 2:] = torch.mm(torque_state_dict['rec.ff.weight'][:, 2:], rate_state_dict['readout.weight'])
+    # new_weights[:, :2] = torque_state_dict['rec.ff.weight'][:, :2]
+    create_connection_from_template_with_weights('hidinteg', new_weights)
 
     ################### test_controller_integ_file
     create_softreset_integrator_from_template('integ')
