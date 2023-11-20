@@ -76,8 +76,8 @@ void setInputMessage(void)
 
 void setOutputMessage(void)
 {
-    myserial_control_out.torque_x = controller.out[0] * 20;
-    myserial_control_out.torque_y = controller.out[1] * 20;
+    myserial_control_out.torque_x = controller.out[0] * 20000;
+    myserial_control_out.torque_y = controller.out[1] * 20000;
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
     myserial_control_out.x_integ = controller.integ_out[0] * 20000;
@@ -149,7 +149,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(8, 80, 80, 4, 4);
+    controller = build_network(8, 80, 80, 4, 80, 2);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 

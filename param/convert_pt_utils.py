@@ -52,6 +52,7 @@ def create_neuron_from_template(name, state_dict, state_name):
     params = {
         'name': name,
         'hidden_size': f'{hidden_size}',
+        'type': '1',
         'd_i': f"{d_i_string}",
         'd_v': f"{d_v_string}",
     }
