@@ -59,3 +59,22 @@ def create_neuron_from_template(name, state_dict, state_name):
     out = f'param/controller/test_controller_{name}_file.h'
 
     create_from_template(template, out, params)
+
+def create_softreset_integrator_from_template(name):
+    hidden_size = 4
+    d_i_string = '{'
+    d_v_string = '{'
+    for i in range(hidden_size):
+        leak_i = 1.0
+        leak_v = 1.0
+        d_i_string += f"{leak_i:2f}f, "
+        d_v_string += f"{leak_v:2f}f, "
+    d_i_string = d_i_string[:-2] + '}'
+    d_v_string = d_v_string[:-2] + '}'
+    params = {
+        'name': name,
+        'hidden_size': f'{hidden_size}',
+        'type': '2',
+        'd_i': f"{d_i_string}",
+        'd_v': f"{d_v_string}",
+    }
