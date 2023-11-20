@@ -80,8 +80,8 @@ void setOutputMessage(void)
     myserial_control_out.torque_y = controller.out[1] * 20;
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = controller.integ_out[0];
-    myserial_control_out.y_integ = controller.integ_out[1];
+    myserial_control_out.x_integ = controller.integ_out[0] * 20000;
+    myserial_control_out.y_integ = controller.integ_out[1] * 20000;
 }
 
 void sendCrazyflie(void)
@@ -148,11 +148,15 @@ void setup(void)
 
 
     //////////////////Initialize controller network
+    DEBUG_serial.write("Build network\n");
     controller = build_network(8, 80, 80, 4, 4);
+    DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
     // Load network parameters from header file and reset
+    DEBUG_serial.write("Loading network\n");
     load_network_from_header(&controller, &conf);
+    DEBUG_serial.write("Resetting\n");
     reset_network(&controller);
 
     //////////////////SETUP CONNECTION WITH CRAZYFLIE
@@ -181,14 +185,14 @@ void loop(void)
         // TODO: Find better solution, otherwise network might be reset mid flight
         if (myserial_control_in.thrust == 0.0f) {
           reset_network(&controller);
-        //   roll_integ = 0.0f;
-        //   pitch_integ = 0.0f;
+          roll_integ = 0.0f;
+          pitch_integ = 0.0f;
         }
 
         // Forward network
         forward_network(&controller);
-        // roll_integ += controller.out[0] - 5 * controller.out[2];
-        // pitch_integ += controller.out[1] + 5 * controller.out[3];
+        roll_integ += controller.out[0] - 5 * controller.out[2];
+        pitch_integ += controller.out[1] + 5 * controller.out[3];
 
         // Store output message to be sent back to CF
         setOutputMessage();

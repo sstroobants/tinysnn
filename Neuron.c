@@ -124,8 +124,12 @@ void forward_neuron(Neuron *n) {
         n->x[i] = 0.0f;
         // update voltage
         n->v[i] = (n->v[i] - n->v_rest) * n->d_v[i] + n->i[i];
+        if (n->type == 2) {
+            if (n->v[i] < 0.0f) {
+                n->v[i] = 0.0f;
+            }
+        }
         // check for spike, possibly reset membrane potential and update spike count
-        // TODO: NOW ONLY HARD RESET, MAKE CONFIGURABLE?
         if (n->v[i] >= n->th[i]) {
             n->s[i] = 1.0f;
             // n->v[i] = n->v[i] - n->th[i];

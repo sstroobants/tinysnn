@@ -18,6 +18,7 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   net.in_size = in_size;
   net.enc_size = enc_size;
   net.hid_size = hid_size;
+  net.integ_size = integ_size;
   net.out_size = out_size;
 
   // Initialize type as LIF
@@ -34,9 +35,9 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   net.enchid = malloc(sizeof(*net.enchid));
   net.hidhid = malloc(sizeof(*net.hidhid));
   net.hid = malloc(sizeof(*net.hid));
-  net.hidout = malloc(sizeof(*net.hidout));
   net.hidinteg = malloc(sizeof(*net.hidinteg));
   net.integ = malloc(sizeof(*net.integ));
+  net.hidout = malloc(sizeof(*net.hidout));
   net.out = calloc(out_size, sizeof(*net.out));
   net.integ_out = calloc(2, sizeof(*net.integ_out));
 
@@ -46,9 +47,9 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   *net.enchid = build_connection(enc_size, hid_size);
   *net.hidhid = build_connection(hid_size, hid_size);
   *net.hid = build_neuron(hid_size);
-  *net.hidout = build_connection(hid_size, out_size);
   *net.hidinteg = build_connection(hid_size, integ_size);
   *net.integ = build_neuron(integ_size);
+  *net.hidout = build_connection(hid_size, out_size);
 
   return net;
 }
@@ -61,8 +62,9 @@ void init_network(NetworkController *net) {
   init_connection(net->enchid);
   init_connection(net->hidhid);
   init_neuron(net->hid);
-  init_connection(net->hidout);
   init_connection(net->hidinteg);
+  init_neuron(net->integ);
+  init_connection(net->hidout);
 }
 
 // Reset network: calls reset functions for children
@@ -75,8 +77,9 @@ void reset_network(NetworkController *net) {
   reset_connection(net->enchid);
   reset_connection(net->hidhid);
   reset_neuron(net->hid);
-  reset_connection(net->hidout);
   reset_connection(net->hidinteg);
+  reset_neuron(net->integ);
+  reset_connection(net->hidout);
 }
 
 // Load parameters for network from header file and call load functions for
@@ -94,7 +97,6 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
   }
   // Set type
   net->type = conf->type;
-
   // Connection input -> encoding
   load_connection_from_header(net->inenc, conf->inenc);
   // Encoding
@@ -105,10 +107,12 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
   load_connection_from_header(net->hidhid, conf->hidhid);
   // Hidden neuron
   load_neuron_from_header(net->hid, conf->hid);
+  // Connection hidden-> integ
+  load_connection_from_header(net->hidinteg, conf->hidinteg);
+  // Integ neuron
+  load_neuron_from_header(net->integ, conf->integ);
   // Connection hidden -> output
   load_connection_from_header(net->hidout, conf->hidout);
-  // Connection hiddel -> integ
-  load_connection_from_header(net->hidinteg, conf->hidinteg);
   // store output decay
   net->tau_out = conf->tau_out;
 }
@@ -141,11 +145,10 @@ float* forward_network(NetworkController *net) {
   for (int i = 0; i < net->out_size; i++) {
     net->out[i] = net->out[i] * net->tau_out + out_spikes[i] * (1 - net->tau_out);
   }
-  net->integ_out[0] = net->integ_out[0] * 0.9 + (net->integ->s[0] - net->integ->s[1]) * (1 - net->tau_out);
-  net->integ_out[1] = net->integ_out[1] * 0.9 + (net->integ->s[2] - net->integ->s[3]) * (1 - net->tau_out);
+  net->integ_out[0] = net->integ_out[0] * 0.98 + (net->integ->s[0] - net->integ->s[1]) * (1.0 - 0.98);
+  net->integ_out[1] = net->integ_out[1] * 0.98 + (net->integ->s[2] - net->integ->s[3]) * (1.0 - 0.98);
   return net->out;
 }
-
 
 // Print network parameters (for debugging purposes)
 void print_network(NetworkController const *net) {

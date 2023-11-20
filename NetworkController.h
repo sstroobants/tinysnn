@@ -25,12 +25,12 @@ typedef struct NetworkController {
   Connection *hidhid;
   // Hidden neurons
   Neuron *hid;
-  // Connection hidden -> output
-  Connection *hidout;
   // Connection hidden -> integ
   Connection *hidinteg;
   // Integral neurons
   Neuron *integ;
+  // Connection hidden -> output
+  Connection *hidout;
 } NetworkController;
 
 // Struct that holds the configuration of a two-layer network
@@ -50,12 +50,12 @@ typedef struct NetworkControllerConf {
   ConnectionConf const *hidhid;
   // Hidden neurons
   NeuronConf const *hid;
-  // Connection hidden -> output
-  ConnectionConf const *hidout;
   // Connection hidden -> integ
   ConnectionConf const *hidinteg;
   // Integral neurons
   NeuronConf const *integ;
+  // Connection hidden -> output
+  ConnectionConf const *hidout;
   // Output decay
   const float tau_out;
 } NetworkControllerConf;
