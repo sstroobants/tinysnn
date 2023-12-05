@@ -79,3 +79,6 @@ def create_softreset_integrator_from_template(name):
         'd_i': f"{d_i_string}",
         'd_v': f"{d_v_string}",
     }
+    template = 'param/templates/test_neuron_file.templ'
+    out = f'param/controller/test_controller_integ_file.h'
+    create_from_template(template, out, params)
