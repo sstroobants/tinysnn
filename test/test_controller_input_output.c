@@ -45,7 +45,7 @@ int main() {
         set_network_input(&controller, inputArray[i_seq]);
         // Forward network
         forward_network(&controller);
-        printf("Output: %f, %f\n", controller.out[0], controller.out[1]);
+        printf("Output: %f, %f, %f, %f\n", controller.out[0], controller.out[1], controller.integ_out[0], controller.integ_out[1]);
     }
     reset_network(&controller);
   }
