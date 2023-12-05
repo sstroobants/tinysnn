@@ -97,6 +97,7 @@ void load_neuron_from_header(Neuron *n, NeuronConf const *conf) {
     // Constants for decay of voltage, threshold and trace
     n->d_i[i] = conf->d_i[i];
     n->d_v[i] = conf->d_v[i];
+    n->th[i] = conf->th[i];
     // Constant for threshold adaptation
     // n->add_thresh[i] = conf->add_thresh[i];
     n->th_bound[i] = n->th_base[i] / n->add_thresh[i];

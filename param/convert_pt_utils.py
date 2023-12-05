@@ -38,23 +38,36 @@ def create_connection_from_template_with_weights(name, weights):
 
     create_from_template(template, out, params)
 
-def create_neuron_from_template(name, state_dict, state_name):
+def create_neuron_from_template(name, state_dict, state_name, sigmoid=False):
     hidden_size = state_dict[f"{state_name}.leak_i"].size()[0]
     d_i_string = '{'
     d_v_string = '{'
+    t_h_string = '{'
     for i in range(hidden_size):
-        leak_i = torch.clamp(state_dict[f"{state_name}.leak_i"][i], 0.0, 1.0).item()
-        leak_v = torch.clamp(state_dict[f"{state_name}.leak_v"][i], 0.0, 1.0).item()
+        leak_i = state_dict[f"{state_name}.leak_i"][i]
+        leak_v = state_dict[f"{state_name}.leak_v"][i]
+        if sigmoid:
+            leak_i = torch.sigmoid(leak_i)
+            leak_v = torch.sigmoid(leak_v)
+        else:
+            leak_i = torch.clamp(leak_i, 0.0, 1.0)
+            leak_v = torch.clamp(leak_v, 0.0, 1.0)
+        leak_i = leak_i.item()
+        leak_v = leak_v.item()
+        th = state_dict[f"{state_name}.thresh"][i].item()
         d_i_string += f"{leak_i:2f}f, "
         d_v_string += f"{leak_v:2f}f, "
+        t_h_string += f"{th:2f}f, "
     d_i_string = d_i_string[:-2] + '}'
     d_v_string = d_v_string[:-2] + '}'
+    t_h_string = t_h_string[:-2] + '}'
     params = {
         'name': name,
         'hidden_size': f'{hidden_size}',
         'type': '1',
         'd_i': f"{d_i_string}",
         'd_v': f"{d_v_string}",
+        'th': f"{t_h_string}",
     }
     template = 'param/templates/test_neuron_file.templ'
     out = f'param/controller/test_controller_{name}_file.h'
@@ -65,17 +78,26 @@ def create_softreset_integrator_from_template(name):
     hidden_size = 4
     d_i_string = '{'
     d_v_string = '{'
+    t_h_string = '{'
     for i in range(hidden_size):
         leak_i = 1.0
         leak_v = 1.0
+        th = 1.0
         d_i_string += f"{leak_i:2f}f, "
         d_v_string += f"{leak_v:2f}f, "
+        t_h_string += f"{th:2f}f, "
+
     d_i_string = d_i_string[:-2] + '}'
     d_v_string = d_v_string[:-2] + '}'
+    t_h_string = t_h_string[:-2] + '}'
     params = {
         'name': name,
         'hidden_size': f'{hidden_size}',
         'type': '2',
         'd_i': f"{d_i_string}",
         'd_v': f"{d_v_string}",
+        'th': f"{t_h_string}",
     }
+    template = 'param/templates/test_neuron_file.templ'
+    out = f'param/controller/test_controller_integ_file.h'
+    create_from_template(template, out, params)
