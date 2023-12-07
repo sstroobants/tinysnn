@@ -45,6 +45,8 @@ typedef struct NeuronConf {
   // float const *add_thresh;
   // Constants for decay of voltage
   float const *d_i, *d_v;
+  // Constant for threshold
+  float const *th;
   // Constants for resetting voltage and threshold
   float const v_rest;
 } NeuronConf;

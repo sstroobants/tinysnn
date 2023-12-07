@@ -4,5 +4,6 @@
 // configuration struct
 float const d_i_${name}[] = $d_i;
 float const d_v_${name}[] = $d_v;
-// size,d_i, d_v, v_rest
-NeuronConf const conf_${name} = {$hidden_size, $type, d_i_${name}, d_v_${name}, 0.0f};
+float const t_h_${name}[] = $th;
+// size,d_i, d_v, th, v_rest
+NeuronConf const conf_${name} = {$hidden_size, $type, d_i_${name}, d_v_${name}, t_h_${name}, 0.0f};
