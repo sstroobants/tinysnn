@@ -131,15 +131,14 @@ void forward_neuron(Neuron *n) {
             }
         }
         // check for spike, possibly reset membrane potential and update spike count
-        if (n->v[i] >= n->th[i]) {
+        if (n->v[i] > n->th[i]) {
+            // print threshold
             n->s[i] = 1.0f;
-            // n->v[i] = n->v[i] - n->th[i];
             if (n->type == 1) {
                 n->v[i] = n->v_rest;
             } else if (n->type == 2) {
                 n->v[i] = n->v[i] - n->th[i];
             }
-            // n->s_count += 1; # doing nothing with this now, remove to prevent overflow
         } else {
             n->s[i] = 0.0f;
         }

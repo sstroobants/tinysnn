@@ -54,7 +54,8 @@ def create_neuron_from_template(name, state_dict, state_name, sigmoid=False):
             leak_v = torch.clamp(leak_v, 0.0, 1.0)
         leak_i = leak_i.item()
         leak_v = leak_v.item()
-        th = state_dict[f"{state_name}.thresh"][i].item()
+        th = state_dict[f"{state_name}.thresh"][i]
+        th = torch.clamp(th, min=0.0).item()
         d_i_string += f"{leak_i:2f}f, "
         d_v_string += f"{leak_v:2f}f, "
         t_h_string += f"{th:2f}f, "
