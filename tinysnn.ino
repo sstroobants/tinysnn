@@ -48,7 +48,10 @@ float acc_y = 0.0f;
 float acc_z = 0.0f;
 float roll_target = 0.0f;
 float pitch_target = 0.0f;
-float inputs[8] = {gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target};
+float inputs[4] = {roll_target, pitch_target, gyro_x, gyro_y};
+
+float roll_gyro_prev = 0.0f;
+float pitch_gyro_prev = 0.0f;
 
 ///////////////////////////////////////////////USER DEFINED FCN///////////////////
 void serialParseMessageIn(void)
@@ -61,27 +64,46 @@ void serialParseMessageIn(void)
 
 void setInputMessage(void)
 {
-    inputs[0] = myserial_control_in.roll_gyro * 0.01;
-    inputs[1] = myserial_control_in.pitch_gyro * 0.01;
-    inputs[2] = myserial_control_in.yaw_gyro * 0.01;
-    inputs[3] = myserial_control_in.x_acc;
-    inputs[4] = myserial_control_in.y_acc;
-    inputs[5] = myserial_control_in.z_acc * 0.3;
-    inputs[6] = myserial_control_in.roll * 0.03;
-    inputs[7] = myserial_control_in.pitch * 0.03;
+    // inputs[0] = myserial_control_in.roll_gyro * 0.01;
+    // inputs[1] = myserial_control_in.pitch_gyro * 0.01;
+    // inputs[2] = myserial_control_in.yaw_gyro * 0.01;
+    // inputs[3] = myserial_control_in.x_acc;
+    // inputs[4] = myserial_control_in.y_acc;
+    // inputs[5] = myserial_control_in.z_acc * 0.3;
+    // inputs[6] = myserial_control_in.roll * 0.03;
+    // inputs[7] = myserial_control_in.pitch * 0.03;
+
+    inputs[0] = myserial_control_in.roll * 0.05;
+    inputs[1] = myserial_control_in.pitch * 0.05;
+    inputs[2] = myserial_control_in.roll_gyro * 0.03;
+    inputs[3] = myserial_control_in.pitch_gyro * 0.03;
     // inputs = [gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target];
     // DEBUG_serial.printf("%f, %f, %f, %f, %f, %f, %f, %f\n", inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7]);
     set_network_input(&controller, inputs);
 }
 
 void setOutputMessage(void)
-{
-    myserial_control_out.torque_x = controller.out[0] * 20000;
-    myserial_control_out.torque_y = controller.out[1] * 20000;
+{   
+    float err_roll = myserial_control_in.roll - myserial_control_in.roll_gyro;
+    float err_pitch = myserial_control_in.pitch + myserial_control_in.pitch_gyro;
+    myserial_control_out.torque_x = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
+    myserial_control_out.torque_y = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
+
+    roll_gyro_prev = err_roll;
+    pitch_gyro_prev = err_pitch;
+    myserial_control_out.torque_x = controller.out[0] * 10000;
+    myserial_control_out.torque_y = controller.out[1] * 10000;
+
+    // myserial_control_out.x_integ = controller.out[0] * 20000;
+    // myserial_control_out.y_integ = controller.out[1] * 20000;
+
+    myserial_control_out.x_integ = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
+    myserial_control_out.y_integ = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
+
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = controller.integ_out[0] * 20000;
-    myserial_control_out.y_integ = controller.integ_out[1] * 20000;
+    // myserial_control_out.x_integ = controller.integ_out[0] * 20000;
+    // myserial_control_out.y_integ = controller.integ_out[1] * 20000;
 }
 
 void sendCrazyflie(void)
@@ -149,7 +171,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(8, 80, 80, 4, 80, 2);
+    controller = build_network(4, 80, 2);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
