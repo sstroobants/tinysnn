@@ -6,7 +6,7 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    torque_state_dict = torch.load(f"param/models/model_torque_trim_forest.pt")
+    torque_state_dict = torch.load(f"param/models/model_torque_stilted_microwave.pt")
 
     ############# -- CONTROLLER -- #################################
 

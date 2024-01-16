@@ -86,22 +86,22 @@ void setOutputMessage(void)
 {   
     float err_roll = myserial_control_in.roll - myserial_control_in.roll_gyro;
     float err_pitch = myserial_control_in.pitch + myserial_control_in.pitch_gyro;
-    myserial_control_out.torque_x = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
-    myserial_control_out.torque_y = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
+    // myserial_control_out.torque_x = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
+    // myserial_control_out.torque_y = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
 
     roll_gyro_prev = err_roll;
     pitch_gyro_prev = err_pitch;
-    myserial_control_out.torque_x = controller.out[0] * 10000;
-    myserial_control_out.torque_y = controller.out[1] * 10000;
+    myserial_control_out.torque_x = controller.out[0] * 20000;
+    myserial_control_out.torque_y = controller.out[1] * 20000;
 
     // myserial_control_out.x_integ = controller.out[0] * 20000;
     // myserial_control_out.y_integ = controller.out[1] * 20000;
 
-    myserial_control_out.x_integ = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
-    myserial_control_out.y_integ = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
+    // myserial_control_out.x_integ = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
+    // myserial_control_out.y_integ = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
 
-    // myserial_control_out.x_integ = roll_integ * 20;
-    // myserial_control_out.y_integ = pitch_integ * 20;
+    myserial_control_out.x_integ = roll_integ * 20;
+    myserial_control_out.y_integ = pitch_integ * 20;
     // myserial_control_out.x_integ = controller.integ_out[0] * 20000;
     // myserial_control_out.y_integ = controller.integ_out[1] * 20000;
 }
