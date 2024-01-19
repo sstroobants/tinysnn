@@ -213,6 +213,7 @@ void loop(void)
 
         // Forward network
         forward_network(&controller);
+        forward_network(&controller);
         // roll_integ += controller.out[0] - 5 * controller.out[2];
         // pitch_integ += controller.out[1] + 5 * controller.out[3];
 

@@ -6,7 +6,11 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    torque_state_dict = torch.load(f"param/models/model_torque_stilted_microwave.pt")
+    # torque_state_dict = torch.load(f"param/models/model_torque_devoted_wood.pt") # new data 2x
+    # torque_state_dict = torch.load(f"param/models/model_torque_stilted_microwave.pt") # old data
+    # torque_state_dict = torch.load(f"param/models/model_torque_jumping_breeze.pt") # old data shifted 6
+    torque_state_dict = torch.load(f"param/models/model_torque_super_plant.pt") # new data shifted 6 2x
+    # torque_state_dict = torch.load(f"param/models/model_torque_sparkling_glade.pt") # old data 2x
 
     ############# -- CONTROLLER -- #################################
 
