@@ -99,7 +99,7 @@ void set_network_input(NetworkController *net, float inputs[]) {
 // Encoding and decoding inside
 // TODO: but we still need to check the size of the array we put in net->in
 float* forward_network(NetworkController *net) {
-  forward_connection(net->inhid, net->hid->x, net->in);
+  forward_connection_real(net->inhid, net->hid->x, net->in);
   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
 //   this could be initialized at init, is faster

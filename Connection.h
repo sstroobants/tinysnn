@@ -39,5 +39,8 @@ void load_connection_from_header(Connection *c, ConnectionConf const *conf);
 void free_connection(Connection *c);
 
 // Forward
-// Spikes as floats to deal with real-valued inputs
 void forward_connection(Connection *c, float x[], float const s[]);
+
+// Forward
+// Spikes as floats to deal with real-valued inputs
+void forward_connection_real(Connection *c, float x[], float const s[]);

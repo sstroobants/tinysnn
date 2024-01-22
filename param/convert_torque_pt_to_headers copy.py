@@ -11,6 +11,7 @@ if __name__ == "__main__":
     # torque_state_dict = torch.load(f"param/models/model_torque_jumping_breeze.pt") # old data shifted 6
     torque_state_dict = torch.load(f"param/models/model_torque_super_plant.pt") # new data shifted 6 2x
     # torque_state_dict = torch.load(f"param/models/model_torque_sparkling_glade.pt") # old data 2x
+    # torque_state_dict = torch.load(f"param/models/model_torque_magic_pyramid.pt") # new_data shifted 5 4x
 
     ############# -- CONTROLLER -- #################################
 
