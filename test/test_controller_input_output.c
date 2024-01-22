@@ -40,7 +40,7 @@ int main() {
   int n_its = 1;
 
   for (int i_its = 0; i_its < n_its; i_its++) {
-    for (int i_seq = 0; i_seq < input_seq_length; i_seq++) {
+    for (int i_seq = 0; i_seq < 2; i_seq++) {
         // Set input to network from file
         set_network_input(&controller, inputArray[i_seq]);
         // print input

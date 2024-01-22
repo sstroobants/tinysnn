@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**"
+                // "${workspaceFolder}/CBLAS/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

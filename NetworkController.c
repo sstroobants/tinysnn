@@ -149,16 +149,20 @@ void set_network_input(NetworkController *net, float inputs[]) {
 // Encoding and decoding inside
 // TODO: but we still need to check the size of the array we put in net->in
 float* forward_network(NetworkController *net) {
-  forward_connection(net->inenc, net->enc->x, net->in);
+  forward_connection_real(net->inenc, net->enc->x, net->in);
   forward_neuron(net->enc);
   forward_connection(net->enchid, net->hid->x, net->enc->s);
   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
   forward_connection(net->hidinteg, net->integ->x, net->hid->s);
   forward_neuron(net->integ);
-  forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
-  forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
-  forward_neuron(net->hid2);
+
+//   Run through torque network twice
+  for (int i = 0; i < 2; i++) {
+    forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
+    forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
+    forward_neuron(net->hid2);
+  }
 //   this could be initialized at init, is faster
   float out_spikes[net->out_size];
   for (int i = 0; i < net->out_size; i++) {

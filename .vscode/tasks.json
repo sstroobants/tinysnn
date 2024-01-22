@@ -47,6 +47,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-std=c99",
+                // "-I${workspaceFolder/CBLAS/include}",
                 "-g",
                 "${file}",
                 // "${fileDirname}/../pid.c", 
@@ -58,7 +59,8 @@
                 // "${fileDirname}/../mt19937ar.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-lm"
+                "-lm",
+                "-pg"
             ],
             "options": {
                 "cwd": "${fileDirname}"

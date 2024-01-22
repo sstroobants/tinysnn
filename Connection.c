@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+// #include <./CBLAS/include/cblas.h>
+// #include <arm_math.h>
 
 // Build connection
 Connection build_connection(int const pre, int const post) {
@@ -62,9 +64,19 @@ void free_connection(Connection *c) {
 void forward_connection(Connection *c, float x[], float const s[]) {
   // Loop over weights and multiply with spikes
   for (int i = 0; i < c->post; i++) {
-    // initialize output at zero
     for (int j = 0; j < c->pre; j++) {
-      x[i] += c->w[i * c->pre + j] * s[j];
+      if (s[j] != 0.0f) {
+        x[i] += c->w[i * c->pre + j];
+      }
     }
   }
+}
+
+void forward_connection_real(Connection *c, float x[], float const s[]) {
+  // Loop over weights and multiply with spikes
+    for (int i = 0; i < c->post; i++) {
+        for (int j = 0; j < c->pre; j++) {
+        x[i] += c->w[i * c->pre + j] * s[j];
+        }
+    }
 }
