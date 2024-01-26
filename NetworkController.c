@@ -156,22 +156,25 @@ float* forward_network(NetworkController *net) {
   forward_neuron(net->hid);
   forward_connection(net->hidinteg, net->integ->x, net->hid->s);
   forward_neuron(net->integ);
-
+  
+  float rate_spikes[net->hid_size];
+  for (int i = 0; i < net->hid_size; i++) {
+      rate_spikes[i] = 0.0f;
+  }
+  forward_connection(net->hidhid2, &rate_spikes, net->hid->s);
 //   Run through torque network twice
   for (int i = 0; i < 2; i++) {
-    forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
+    for (int j = 0; j < net->hid2_size; j++) {
+      net->hid2->x[j] = net->hid2->x[j] + rate_spikes[j];
+    }
+    // forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
     forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
     forward_neuron(net->hid2);
   }
-//   this could be initialized at init, is faster
-  float out_spikes[net->out_size];
   for (int i = 0; i < net->out_size; i++) {
-    out_spikes[i] = 0.0f;
+    net->out[i] = 0.0f;
   }
-  forward_connection(net->hid2out, &out_spikes, net->hid2->s);
-  for (int i = 0; i < net->out_size; i++) {
-    net->out[i] = net->out[i] * net->tau_out + out_spikes[i] * (1 - net->tau_out);
-  }
+  forward_connection(net->hid2out, net->out, net->hid2->s);
   net->integ_out[0] = net->integ_out[0] * 0.98 + (net->integ->s[0] - net->integ->s[1]) * (1.0 - 0.98);
   net->integ_out[1] = net->integ_out[1] * 0.98 + (net->integ->s[2] - net->integ->s[3]) * (1.0 - 0.98);
   return net->out;

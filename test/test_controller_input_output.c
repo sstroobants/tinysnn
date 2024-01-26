@@ -37,17 +37,17 @@ int main() {
   printf("Starting loop\n");
   
   start_t = clock();
-  int n_its = 1;
+  int n_its = 50;
 
   for (int i_its = 0; i_its < n_its; i_its++) {
-    for (int i_seq = 0; i_seq < 2; i_seq++) {
+    for (int i_seq = 0; i_seq < input_seq_length; i_seq++) {
         // Set input to network from file
         set_network_input(&controller, inputArray[i_seq]);
         // print input
         // printf("Input: %f, %f, %f, %f, %f, %f, %f, %f\n", controller.in[0], controller.in[1], controller.in[2], controller.in[3], controller.in[4], controller.in[5], controller.in[6], controller.in[7]);
         // Forward network
         forward_network(&controller);
-        printf("Output: %f, %f, %f, %f\n", controller.out[0], controller.out[1], controller.integ_out[0], controller.integ_out[1]);
+        // printf("Output: %f, %f, %f, %f\n", controller.out[0], controller.out[1], controller.integ_out[0], controller.integ_out[1]);
     }
     reset_network(&controller);
   }
