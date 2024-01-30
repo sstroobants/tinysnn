@@ -210,11 +210,6 @@ void loop(void)
           pitch_integ = 0.0f;
         }
 
-        // Send message via UART to CF
-        timer_send = 0;
-        sendCrazyflie();
-        timer_send_outer = timer_send_outer + timer_send;
-        timer_send = 0;
         // Forward network
         timer_network = 0;
         forward_network(&controller);
@@ -222,6 +217,11 @@ void loop(void)
         n_forward_passes++;
         timer_network = 0;
 
+        // Send message via UART to CF
+        timer_send = 0;
+        sendCrazyflie();
+        timer_send_outer = timer_send_outer + timer_send;
+        timer_send = 0;
         
         
         
