@@ -175,8 +175,8 @@ float* forward_network(NetworkController *net) {
     net->out[i] = 0.0f;
   }
   forward_connection(net->hid2out, net->out, net->hid2->s);
-  net->integ_out[0] = net->integ_out[0] * 0.98 + (net->integ->s[0] - net->integ->s[1]) * (1.0 - 0.98);
-  net->integ_out[1] = net->integ_out[1] * 0.98 + (net->integ->s[2] - net->integ->s[3]) * (1.0 - 0.98);
+  net->integ_out[0] = net->integ_out[0] * 0.98 + (net->integ->s[0] - net->integ->s[2]) * (1.0 - 0.98);
+  net->integ_out[1] = net->integ_out[1] * 0.98 + (net->integ->s[1] - net->integ->s[3]) * (1.0 - 0.98);
   return net->out;
 }
 

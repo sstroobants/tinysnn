@@ -6,7 +6,7 @@ from convert_pt_utils import create_from_template, create_connection_from_templa
 
 if __name__ == "__main__": 
     # Load network
-    state_dict = torch.load(f"param/models/model_full_swept_deluge.pt") # first full (no integrator)
+    state_dict = torch.load(f"param/models/model_full_effortless_sky.pt") # first full (no integrator)
 
     hidden_size = state_dict["l1.neuron.leak_i"].size()[0]
     hidden2_size = state_dict["l2.neuron.leak_i"].size()[0]
