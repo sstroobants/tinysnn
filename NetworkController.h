@@ -10,7 +10,7 @@ typedef struct NetworkController {
   // Type (1: LIF, 2: InputALIF, ...)
   int type;
   // placeholder for input
-  float *in, *hid2_in;
+  float *in, *hid2_in, *integ_in;
   // placeholder for output and output decay
   float *out;
   float *integ_out;

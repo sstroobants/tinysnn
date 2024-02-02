@@ -57,10 +57,10 @@ if __name__ == "__main__":
     # new_weights = torch.mm(integ_weights, attitude_state_dict['p_out.synapse.weight'])
     new_weights[:2, :M] = attitude_state_dict['p_out.synapse.weight']
     new_weights[2:, :M] = -attitude_state_dict['p_out.synapse.weight']
-    new_weights[:, M:] = torch.tensor([[-1, 0],
-                                        [0, -1],
-                                        [1, 0],
-                                        [0, 1]], dtype=torch.float)
+    new_weights[:, M:] = torch.tensor([[0, -1],
+                                        [-1, 0],
+                                        [0, 1],
+                                        [1, 0]], dtype=torch.float)
     create_connection_from_template_with_weights('hidinteg', new_weights)
 
     ################### test_controller_integ_file
@@ -72,8 +72,8 @@ if __name__ == "__main__":
     M = controller_conf_params['hidden_size']
     
     new_weights = torch.zeros([N, M + 4])
-    new_weights[:, 4:] = torch.mm(torque_state_dict['l1.synapse_ff.weight'][:, 4:], attitude_state_dict['p_out.synapse.weight'])
-    new_weights[:, :4] = torque_state_dict['l1.synapse_ff.weight'][:, :4]
+    new_weights[:, :4] = torque_state_dict['l1.synapse_ff.weight'][:, :4][:, ]
+    new_weights[:, 4:] = torch.mm(torque_state_dict['l1.synapse_ff.weight'][:, 4:][:, [1,0]], attitude_state_dict['p_out.synapse.weight'])
 
     create_connection_from_template_with_weights('hidhid2', new_weights) 
 

@@ -30,8 +30,9 @@ NetworkController build_network(int const in_size, int const enc_size, int const
 
   // Allocate memory for input placeholders and underlying
   // neurons and connections
-  net.in = calloc(in_size, sizeof(*net.in));
-  net.hid2_in = calloc(hid2_size, sizeof(*net.hid2_in)); // isnt this unnecessary?
+  net.in = calloc(in_size - 2, sizeof(*net.in));
+  net.hid2_in = calloc(hid_size + 4, sizeof(*net.hid2_in));
+  net.integ_in = calloc(hid_size + 2, sizeof(*net.integ_in));
   net.inenc = malloc(sizeof(*net.inenc));
   net.enc = malloc(sizeof(*net.enc));
   net.enchid = malloc(sizeof(*net.enchid));
@@ -47,14 +48,14 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   net.integ_out = calloc(2, sizeof(*net.integ_out));
 
   // Call build functions for underlying neurons and connections
-  *net.inenc = build_connection(in_size, enc_size);
+  *net.inenc = build_connection(in_size - 2, enc_size);
   *net.enc = build_neuron(enc_size);
   *net.enchid = build_connection(enc_size, hid_size);
   *net.hidhid = build_connection(hid_size, hid_size);
   *net.hid = build_neuron(hid_size);
-  *net.hidinteg = build_connection(hid_size, integ_size);
+  *net.hidinteg = build_connection(hid_size + 2, integ_size);
   *net.integ = build_neuron(integ_size);
-  *net.hidhid2 = build_connection(hid_size, hid2_size);
+  *net.hidhid2 = build_connection(hid_size + 4, hid2_size);
   *net.hid2hid2 = build_connection(hid2_size, hid2_size);
   *net.hid2 = build_neuron(hid2_size);
   *net.hid2out = build_connection(hid2_size, out_size);
@@ -141,33 +142,50 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
 
 // Set the inputs of the controller network with given floats
 void set_network_input(NetworkController *net, float inputs[]) {
-    net->in = inputs;
+    net->in[0] = inputs[0];
+    net->in[1] = inputs[1];
+    net->in[2] = inputs[2];
+    net->in[3] = inputs[3];
+    net->in[4] = inputs[4];
+    net->in[5] = inputs[5];
+    // SET INTEG INPUT
+    net->integ_in[net->hid_size] = inputs[6];
+    net->integ_in[net->hid_size + 1] = inputs[7];
+    // SET HID2 INPUT
+    net->hid2_in[0] = inputs[6];
+    net->hid2_in[1] = inputs[7];
+    net->hid2_in[2] = inputs[0] * 3;
+    net->hid2_in[3] = inputs[1] * 3;    
 }
 
 
 // Forward network and call forward functions for children
 // Encoding and decoding inside
-// TODO: but we still need to check the size of the array we put in net->in
 float* forward_network(NetworkController *net) {
   forward_connection_real(net->inenc, net->enc->x, net->in);
   forward_neuron(net->enc);
   forward_connection(net->enchid, net->hid->x, net->enc->s);
   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
-  forward_connection(net->hidinteg, net->integ->x, net->hid->s);
+  for (int i = 0; i < net->hid_size; i++) {
+      net->integ_in[i] = net->hid->s[i];
+  }
+  forward_connection(net->hidinteg, net->integ->x, net->integ_in);
   forward_neuron(net->integ);
   
-  float rate_spikes[net->hid_size];
-  for (int i = 0; i < net->hid_size; i++) {
-      rate_spikes[i] = 0.0f;
+  float torque_in[net->hid2_size];
+  for (int i = 0; i < net->hid2_size; i++) {
+      torque_in[i] = 0.0f;
   }
-  forward_connection(net->hidhid2, &rate_spikes, net->hid->s);
+  for (int i = 0; i < net->hid_size; i++) {
+      net->hid2_in[i+4] = net->hid->s[i];
+  }
 //   Run through torque network twice
+  forward_connection(net->hidhid2, &torque_in, net->hid2_in);
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < net->hid2_size; j++) {
-      net->hid2->x[j] = net->hid2->x[j] + rate_spikes[j];
+      net->hid2->x[j] = net->hid2->x[j] + torque_in[j];
     }
-    // forward_connection(net->hidhid2, net->hid2->x, net->hid->s);
     forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
     forward_neuron(net->hid2);
   }

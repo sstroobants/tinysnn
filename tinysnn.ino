@@ -161,7 +161,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(8, 80, 80, 4, 80, 2);
+    controller = build_network(8, 100, 150, 4, 80, 2);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
