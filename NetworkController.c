@@ -149,11 +149,11 @@ void set_network_input(NetworkController *net, float inputs[]) {
     net->in[4] = inputs[4];
     net->in[5] = inputs[5];
     // SET INTEG INPUT
-    net->integ_in[net->hid_size] = inputs[6];
-    net->integ_in[net->hid_size + 1] = inputs[7];
+    net->integ_in[net->hid_size] = inputs[6]; // roll command
+    net->integ_in[net->hid_size + 1] = inputs[7]; // pitch command
     // SET HID2 INPUT
-    net->hid2_in[0] = inputs[6];
-    net->hid2_in[1] = inputs[7];
+    net->hid2_in[0] = inputs[6]; // roll command
+    net->hid2_in[1] = inputs[7]; // pitch command
     net->hid2_in[2] = inputs[0] * 3;
     net->hid2_in[3] = inputs[1] * 3;    
 }
@@ -170,7 +170,11 @@ float* forward_network(NetworkController *net) {
   for (int i = 0; i < net->hid_size; i++) {
       net->integ_in[i] = net->hid->s[i];
   }
-  forward_connection(net->hidinteg, net->integ->x, net->integ_in);
+  forward_connection_real(net->hidinteg, net->integ->x, net->integ_in);
+//   net->integ_out[0] = net->integ->x[0] * 1;
+//   net->integ_out[1] = net->integ->x[1] * 1;
+//   net->integ_out[0] = net->integ_in[net->hid_size];
+//   net->integ_out[1] = net->integ_in[net->hid_size + 1];
   forward_neuron(net->integ);
   
   float torque_in[net->hid2_size];
@@ -181,7 +185,7 @@ float* forward_network(NetworkController *net) {
       net->hid2_in[i+4] = net->hid->s[i];
   }
 //   Run through torque network twice
-  forward_connection(net->hidhid2, &torque_in, net->hid2_in);
+  forward_connection_real(net->hidhid2, &torque_in, net->hid2_in);
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < net->hid2_size; j++) {
       net->hid2->x[j] = net->hid2->x[j] + torque_in[j];

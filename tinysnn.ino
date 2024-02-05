@@ -88,8 +88,8 @@ void setOutputMessage(void)
     myserial_control_out.torque_y = controller.out[1] * 20000;
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = controller.integ_out[0] * 20000;
-    myserial_control_out.y_integ = controller.integ_out[1] * 20000;
+    myserial_control_out.x_integ = controller.integ_out[1] * -20000;
+    myserial_control_out.y_integ = controller.integ_out[0] * -20000;
 }
 
 void sendCrazyflie(void)

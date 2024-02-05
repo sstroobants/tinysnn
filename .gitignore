@@ -5,6 +5,7 @@
 param/*/*.h
 param/*h
 param/__pycache__/
+*.pyc
 
 # Prerequisites
 *.d
