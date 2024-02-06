@@ -80,7 +80,7 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
   // Connection input -> encoding
   load_connection_from_header(net->inhid, conf->inhid);
   // Connection hidden -> hidden
-  load_connection_from_header(net->hidhid, conf->hidhid);
+//   load_connection_from_header(net->hidhid, conf->hidhid);
   // Hidden neuron
   load_neuron_from_header(net->hid, conf->hid);
   // Connection hidden -> output
@@ -100,10 +100,13 @@ void set_network_input(NetworkController *net, float inputs[]) {
 // TODO: but we still need to check the size of the array we put in net->in
 float* forward_network(NetworkController *net) {
   forward_connection_real(net->inhid, net->hid->x, net->in);
-  forward_connection(net->hidhid, net->hid->x, net->hid->s);
+//   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
 //   this could be initialized at init, is faster
   float out_spikes[net->out_size];
+//   for (int i = 0; i < net->hid_size; i++) {
+//     printf("%d ", (int) net->hid->s[i]);
+//   }
   for (int i = 0; i < net->out_size; i++) {
     out_spikes[i] = 0.0f;
   }

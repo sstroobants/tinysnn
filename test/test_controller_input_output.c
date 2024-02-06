@@ -10,18 +10,18 @@
 
 // Test network forward functions
 int main() {
-  NetworkController controller = build_network(8, 80, 80, 4, 80, 2);
+  NetworkController controller = build_network(6, 160, 2);
   init_network(&controller);
 
   // Load input sequence
-  int input_seq_length = 1000;
-  int n_inputs = 8;
+  int input_seq_length = 8000;
+  int n_inputs = 6;
   char input_filename[] = "input.csv";
   float **inputArray = malloc(input_seq_length * sizeof(float *));
   for (int i = 0; i < input_seq_length; i++) {
     inputArray[i] = malloc(n_inputs * sizeof(float));
   }
-  read_sequence(input_filename, inputArray);
+  read_sequence(input_filename, inputArray, input_seq_length, n_inputs);
 
   // Load network parameters from header file
   load_network_from_header(&controller, &conf);
@@ -47,7 +47,8 @@ int main() {
         // printf("Input: %f, %f, %f, %f, %f, %f, %f, %f\n", controller.in[0], controller.in[1], controller.in[2], controller.in[3], controller.in[4], controller.in[5], controller.in[6], controller.in[7]);
         // Forward network
         forward_network(&controller);
-        printf("Output: %f, %f, %f, %f\n", controller.out[0], controller.out[1], controller.integ_out[0], controller.integ_out[1]);
+        // forward_network(&controller);
+        printf("Output: %f, %f\n", controller.out[0], controller.out[1]);
     }
     reset_network(&controller);
   }
@@ -60,9 +61,9 @@ int main() {
   free_network(&controller);
   
   // Free input array
-  for (int i = 0; i < n_inputs; i++) {
-    free(inputArray[i]);
-  }
+//   for (int i = 0; i < n_inputs; i++) {
+//     free(inputArray[i]);
+//   }
   free(inputArray);
   return 0;
 }

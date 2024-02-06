@@ -29,13 +29,8 @@ void print_array_2d(int const rows, int const cols, float const **x) {
   printf("\n");
 }
 
-void read_sequence(char filename[], float **inputContainer) {
+void read_sequence(char filename[], float **inputContainer, int inputLength, int inputSize) {
   FILE *input_file;
-//   int inputSize = sizeof(inputArray) / sizeof(inputArray[0]);
-//   int input_length = sizeof(inputArray[0]) / sizeof(inputArray[0][0]);
-  int inputSize = 8;
-  int inputLength = 1000;
-
   input_file = fopen(filename, "r");
   if (input_file == NULL){
       printf("Error Reading File\n");
