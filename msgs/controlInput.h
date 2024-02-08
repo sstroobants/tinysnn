@@ -4,6 +4,7 @@ struct __attribute__((__packed__)) serial_control_in {
     //state
     float roll; //roll target
     float pitch; //pitch target
+    float yaw; //yaw rate target
     // gyro values
     float roll_gyro;
     float pitch_gyro;
