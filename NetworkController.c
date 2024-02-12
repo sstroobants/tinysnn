@@ -91,7 +91,14 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
 
 // Set the inputs of the controller network with given floats
 void set_network_input(NetworkController *net, float inputs[]) {
-    net->in = inputs;
+    net->in[0] = inputs[6];
+    net->in[1] = inputs[7];
+    net->in[2] = inputs[8];
+    net->in[3] = inputs[0] * 3;
+    net->in[4] = inputs[1] * 3;
+    net->in[5] = inputs[2] * 3;
+    net->in[6] = inputs[3];
+    net->in[7] = inputs[4];
 }
 
 

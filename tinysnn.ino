@@ -12,6 +12,7 @@ extern "C"{
 // -------------------------- COMMUNICATION DEFINED VARIABLES-----------------------------
 #define COMMUNICATION_SERIAL Serial2
 #define COMMUNICATION_SERIAL_BAUD 460800
+// #define COMMUNICATION_SERIAL_BAUD 230400
 
 byte START_BYTE_SERIAL_CF=0x9A;
 elapsedMicros last_time_write_to_cf = 0;
@@ -35,6 +36,13 @@ bool receiving = true;
 
 // -------------------------- CONTROL DEFINED VARIABLES-------------------------------
 elapsedMicros timer_count_main = 0;
+elapsedMicros timer_network = 0;
+elapsedMicros timer_receive = 0;
+elapsedMicros timer_send = 0;
+int timer_network_outer = 0;
+int timer_receive_outer = 0;
+int timer_send_outer = 0;
+int n_forward_passes = 0;
 NetworkController controller;
 float roll_integ = 0.0f;
 float pitch_integ = 0.0f;
@@ -48,12 +56,21 @@ float acc_y = 0.0f;
 float acc_z = 0.0f;
 float roll_target = 0.0f;
 float pitch_target = 0.0f;
-float inputs[4] = {roll_target, pitch_target, gyro_x, gyro_y};
-
-float roll_gyro_prev = 0.0f;
-float pitch_gyro_prev = 0.0f;
+float yaw_target = 0.0f;
+float inputs[9] = {gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target, yaw_target};
 
 ///////////////////////////////////////////////USER DEFINED FCN///////////////////
+static inline int16_t saturateSignedInt16(float in)
+{
+  // don't use INT16_MIN, because later we may negate it, which won't work for that value.
+  if (in > INT16_MAX)
+    return INT16_MAX;
+  else if (in < -INT16_MAX)
+    return -INT16_MAX;
+  else
+    return (int16_t)in;
+}
+
 void serialParseMessageIn(void)
 {
   //Copy received buffer to structure
@@ -64,48 +81,29 @@ void serialParseMessageIn(void)
 
 void setInputMessage(void)
 {
-    // inputs[0] = myserial_control_in.roll_gyro * 0.01;
-    // inputs[1] = myserial_control_in.pitch_gyro * 0.01;
-    // inputs[2] = myserial_control_in.yaw_gyro * 0.01;
-    // inputs[3] = myserial_control_in.x_acc;
-    // inputs[4] = myserial_control_in.y_acc;
-    // inputs[5] = myserial_control_in.z_acc * 0.3;
-    // inputs[6] = myserial_control_in.roll * 0.03;
-    // inputs[7] = myserial_control_in.pitch * 0.03;
-
-    inputs[0] = myserial_control_in.roll * 0.03;
-    inputs[1] = myserial_control_in.pitch * 0.03;
-    inputs[2] = myserial_control_in.roll_gyro * 0.03;
-    inputs[3] = myserial_control_in.pitch_gyro * 0.03;
-    inputs[4] = myserial_control_in.x_acc * 0.05;
-    inputs[5] = myserial_control_in.y_acc * 0.05;
+    inputs[0] = myserial_control_in.roll_gyro * 0.01;
+    inputs[1] = myserial_control_in.pitch_gyro * 0.01;
+    inputs[2] = myserial_control_in.yaw_gyro * 0.01;
+    inputs[3] = myserial_control_in.x_acc;
+    inputs[4] = myserial_control_in.y_acc;
+    inputs[5] = myserial_control_in.z_acc * 0.3;
+    inputs[6] = myserial_control_in.roll * 0.03;
+    inputs[7] = myserial_control_in.pitch * 0.03;
+    inputs[8] = myserial_control_in.yaw * 0.03;
     // inputs = [gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target];
     // DEBUG_serial.printf("%f, %f, %f, %f, %f, %f, %f, %f\n", inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7]);
     set_network_input(&controller, inputs);
 }
 
 void setOutputMessage(void)
-{   
-    float err_roll = myserial_control_in.roll - myserial_control_in.roll_gyro;
-    float err_pitch = myserial_control_in.pitch + myserial_control_in.pitch_gyro;
-    // myserial_control_out.torque_x = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
-    // myserial_control_out.torque_y = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
-
-    roll_gyro_prev = err_roll;
-    pitch_gyro_prev = err_pitch;
-    myserial_control_out.torque_x = controller.out[0] * 20000;
-    myserial_control_out.torque_y = controller.out[1] * 20000;
-
-    // myserial_control_out.x_integ = controller.out[0] * 20000;
-    // myserial_control_out.y_integ = controller.out[1] * 20000;
-
-    // myserial_control_out.x_integ = err_roll * 250 + (err_roll - roll_gyro_prev) * 2.5 * 500;
-    // myserial_control_out.y_integ = err_pitch * 250 + (err_pitch - pitch_gyro_prev) * 2.5 * 500;
-
-    myserial_control_out.x_integ = roll_integ * 20;
-    myserial_control_out.y_integ = pitch_integ * 20;
-    // myserial_control_out.x_integ = controller.integ_out[0] * 20000;
-    // myserial_control_out.y_integ = controller.integ_out[1] * 20000;
+{
+    myserial_control_out.torque_x = saturateSignedInt16(controller.out[0] * 20000);
+    myserial_control_out.torque_y = saturateSignedInt16(controller.out[1] * 20000);
+    myserial_control_out.torque_z = saturateSignedInt16(controller.out[2] * 20000);
+    // myserial_control_out.x_integ = roll_integ * 20;
+    // myserial_control_out.y_integ = pitch_integ * 20;
+    myserial_control_out.x_integ = saturateSignedInt16(controller.integ_out[1] * -20000);
+    myserial_control_out.y_integ = saturateSignedInt16(controller.integ_out[0] * -20000);
 }
 
 void sendCrazyflie(void)
@@ -138,6 +136,8 @@ void receiveCrazyflie(void)
   //Collect packets on the buffer if available:
     while(COMMUNICATION_SERIAL.available()) {
         // DEBUG_serial.write("trying to read...\n");
+
+        timer_receive = 0;
         uint8_t serial_cf_byte_in;
         serial_cf_byte_in = COMMUNICATION_SERIAL.read();
         if ((serial_cf_byte_in == START_BYTE_SERIAL_CF) || (serial_cf_buf_in_cnt > 0)) {
@@ -162,6 +162,8 @@ void receiveCrazyflie(void)
             receiving = false;
             sending = true;
         }
+        timer_receive_outer = timer_receive_outer + timer_receive;
+        timer_receive = 0;
     }
 }
 
@@ -173,9 +175,10 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(6, 160, 2);
+    controller = build_network(9, 100, 59, 4, 88, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
+
 
     // Load network parameters from header file and reset
     DEBUG_serial.write("Loading network\n");
@@ -198,8 +201,17 @@ void loop(void)
         // Timer for debugging
         if (timer_count_main > 1000000) {
           DEBUG_serial.printf("Received %i packets over last second\n", serial_cf_received_packets);
+          DEBUG_serial.printf("Processing network took %i ms for %i forward passes\n", timer_network_outer / 1000, n_forward_passes);
+          DEBUG_serial.printf("Amounts to %i per inference\n", timer_network_outer/n_forward_passes);
+          DEBUG_serial.printf("Receiving took %i ms for %i forward passes\n", timer_receive_outer / 1000, n_forward_passes);
+          DEBUG_serial.printf("Sending took %i ms for %i forward passes\n", timer_send_outer / 1000, n_forward_passes);
+          // DEBUG_serial.printf("CPU temp is %f\n", tempmonGetTemp());
           serial_cf_received_packets = 0;
           timer_count_main = 0;
+          timer_network_outer = 0;
+          timer_receive_outer = 0;
+          timer_send_outer = 0;
+          n_forward_passes = 0;
         }
         // Set input to network from CF
         // DEBUG_serial.write("Setting input message\n");
@@ -214,15 +226,26 @@ void loop(void)
         }
 
         // Forward network
+        timer_network = 0;
         forward_network(&controller);
-        forward_network(&controller);
-        // roll_integ += controller.out[0] - 5   * controller.out[2];
+        timer_network_outer = timer_network_outer + timer_network;
+        n_forward_passes++;
+        timer_network = 0;
+
+        // Send message via UART to CF
+        timer_send = 0;
+        sendCrazyflie();
+        timer_send_outer = timer_send_outer + timer_send;
+        timer_send = 0;
+        
+        
+        
+        
+        // roll_integ += controller.out[0] - 5 * controller.out[2];
         // pitch_integ += controller.out[1] + 5 * controller.out[3];
 
         // Store output message to be sent back to CF
         setOutputMessage();
 
-        // Send message via UART to CF
-        sendCrazyflie();
     }
 }
