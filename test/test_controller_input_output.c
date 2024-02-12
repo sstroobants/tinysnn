@@ -10,7 +10,7 @@
 
 // Test network forward functions
 int main() {
-  NetworkController controller = build_network(8, 100, 83, 4, 58, 2);
+  NetworkController controller = build_network(8, 100, 83, 4, 100, 3);
   init_network(&controller);
 
   // Load input sequence

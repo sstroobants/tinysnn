@@ -56,9 +56,21 @@ float acc_y = 0.0f;
 float acc_z = 0.0f;
 float roll_target = 0.0f;
 float pitch_target = 0.0f;
-float inputs[8] = {gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target};
+float yaw_target = 0.0f;
+float inputs[9] = {gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target, yaw_target};
 
 ///////////////////////////////////////////////USER DEFINED FCN///////////////////
+static inline int16_t saturateSignedInt16(float in)
+{
+  // don't use INT16_MIN, because later we may negate it, which won't work for that value.
+  if (in > INT16_MAX)
+    return INT16_MAX;
+  else if (in < -INT16_MAX)
+    return -INT16_MAX;
+  else
+    return (int16_t)in;
+}
+
 void serialParseMessageIn(void)
 {
   //Copy received buffer to structure
@@ -77,6 +89,7 @@ void setInputMessage(void)
     inputs[5] = myserial_control_in.z_acc * 0.3;
     inputs[6] = myserial_control_in.roll * 0.03;
     inputs[7] = myserial_control_in.pitch * 0.03;
+    inputs[8] = myserial_control_in.yaw * 0.03;
     // inputs = [gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target];
     // DEBUG_serial.printf("%f, %f, %f, %f, %f, %f, %f, %f\n", inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7]);
     set_network_input(&controller, inputs);
@@ -84,12 +97,13 @@ void setInputMessage(void)
 
 void setOutputMessage(void)
 {
-    myserial_control_out.torque_x = controller.out[0] * 20000;
-    myserial_control_out.torque_y = controller.out[1] * 20000;
+    myserial_control_out.torque_x = saturateSignedInt16(controller.out[0] * 20000);
+    myserial_control_out.torque_y = saturateSignedInt16(controller.out[1] * 20000);
+    myserial_control_out.torque_z = saturateSignedInt16(controller.out[2] * 20000);
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = controller.integ_out[1] * -20000;
-    myserial_control_out.y_integ = controller.integ_out[0] * -20000;
+    myserial_control_out.x_integ = saturateSignedInt16(controller.integ_out[1] * -20000);
+    myserial_control_out.y_integ = saturateSignedInt16(controller.integ_out[0] * -20000);
 }
 
 void sendCrazyflie(void)
@@ -161,7 +175,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(8, 100, 83, 4, 58, 2);
+    controller = build_network(9, 100, 59, 4, 88, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 

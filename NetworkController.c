@@ -30,8 +30,8 @@ NetworkController build_network(int const in_size, int const enc_size, int const
 
   // Allocate memory for input placeholders and underlying
   // neurons and connections
-  net.in = calloc(in_size - 2, sizeof(*net.in));
-  net.hid2_in = calloc(hid_size + 4, sizeof(*net.hid2_in));
+  net.in = calloc(in_size - 3, sizeof(*net.in));
+  net.hid2_in = calloc(hid_size + 6, sizeof(*net.hid2_in));
   net.integ_in = calloc(hid_size + 2, sizeof(*net.integ_in));
   net.inenc = malloc(sizeof(*net.inenc));
   net.enc = malloc(sizeof(*net.enc));
@@ -48,14 +48,14 @@ NetworkController build_network(int const in_size, int const enc_size, int const
   net.integ_out = calloc(2, sizeof(*net.integ_out));
 
   // Call build functions for underlying neurons and connections
-  *net.inenc = build_connection(in_size - 2, enc_size);
+  *net.inenc = build_connection(in_size - 3, enc_size);
   *net.enc = build_neuron(enc_size);
   *net.enchid = build_connection(enc_size, hid_size);
   *net.hidhid = build_connection(hid_size, hid_size);
   *net.hid = build_neuron(hid_size);
   *net.hidinteg = build_connection(hid_size + 2, integ_size);
   *net.integ = build_neuron(integ_size);
-  *net.hidhid2 = build_connection(hid_size + 4, hid2_size);
+  *net.hidhid2 = build_connection(hid_size + 6, hid2_size);
   *net.hid2hid2 = build_connection(hid2_size, hid2_size);
   *net.hid2 = build_neuron(hid2_size);
   *net.hid2out = build_connection(hid2_size, out_size);
@@ -154,8 +154,10 @@ void set_network_input(NetworkController *net, float inputs[]) {
     // SET HID2 INPUT
     net->hid2_in[0] = inputs[6]; // roll command
     net->hid2_in[1] = inputs[7]; // pitch command
-    net->hid2_in[2] = inputs[0] * 3;
-    net->hid2_in[3] = inputs[1] * 3;    
+    net->hid2_in[2] = inputs[8]; // yaw_rate command
+    net->hid2_in[3] = inputs[0] * 3;
+    net->hid2_in[4] = inputs[1] * 3;
+    net->hid2_in[5] = inputs[2] * 3;
 }
 
 
@@ -182,7 +184,7 @@ float* forward_network(NetworkController *net) {
       torque_in[i] = 0.0f;
   }
   for (int i = 0; i < net->hid_size; i++) {
-      net->hid2_in[i+4] = net->hid->s[i];
+      net->hid2_in[i+6] = net->hid->s[i];
   }
 //   Run through torque network twice
   forward_connection_real(net->hidhid2, &torque_in, net->hid2_in);
@@ -197,8 +199,8 @@ float* forward_network(NetworkController *net) {
     net->out[i] = 0.0f;
   }
   forward_connection(net->hid2out, net->out, net->hid2->s);
-  net->integ_out[0] = net->integ_out[0] * 0.98 + (net->integ->s[0] - net->integ->s[2]) * (1.0 - 0.98);
-  net->integ_out[1] = net->integ_out[1] * 0.98 + (net->integ->s[1] - net->integ->s[3]) * (1.0 - 0.98);
+  net->integ_out[0] = net->integ_out[0] * 0.99 + (net->integ->s[0] - net->integ->s[2]) * (1.0 - 0.99);
+  net->integ_out[1] = net->integ_out[1] * 0.99 + (net->integ->s[1] - net->integ->s[3]) * (1.0 - 0.99);
   return net->out;
 }
 

@@ -1,1 +1,2 @@
-create_neuron_from_template
+
+    # att_name = "lambent-paper-185"
