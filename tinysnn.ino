@@ -228,6 +228,7 @@ void loop(void)
         // Forward network
         timer_network = 0;
         forward_network(&controller);
+        forward_network(&controller);
         timer_network_outer = timer_network_outer + timer_network;
         n_forward_passes++;
         timer_network = 0;

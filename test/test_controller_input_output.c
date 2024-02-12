@@ -10,12 +10,12 @@
 
 // Test network forward functions
 int main() {
-  NetworkController controller = build_network(6, 160, 2);
+  NetworkController controller = build_network(8, 88, 3);
   init_network(&controller);
 
   // Load input sequence
-  int input_seq_length = 8000;
-  int n_inputs = 6;
+  int input_seq_length = 12000;
+  int n_inputs = 8;
   char input_filename[] = "input.csv";
   float **inputArray = malloc(input_seq_length * sizeof(float *));
   for (int i = 0; i < input_seq_length; i++) {
@@ -40,7 +40,7 @@ int main() {
   int n_its = 1;
 
   for (int i_its = 0; i_its < n_its; i_its++) {
-    for (int i_seq = 0; i_seq < input_seq_length; i_seq++) {
+    for (int i_seq = 0; i_seq < 3; i_seq++) {
         // Set input to network from file
         set_network_input(&controller, inputArray[i_seq]);
         // print input
@@ -48,7 +48,7 @@ int main() {
         // Forward network
         forward_network(&controller);
         // forward_network(&controller);
-        printf("Output: %f, %f\n", controller.out[0], controller.out[1]);
+        printf("Output: %f, %f, %f\n", controller.out[0], controller.out[1],  controller.out[2]);
     }
     reset_network(&controller);
   }

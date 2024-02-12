@@ -80,7 +80,7 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
   // Connection input -> encoding
   load_connection_from_header(net->inhid, conf->inhid);
   // Connection hidden -> hidden
-//   load_connection_from_header(net->hidhid, conf->hidhid);
+  load_connection_from_header(net->hidhid, conf->hidhid);
   // Hidden neuron
   load_neuron_from_header(net->hid, conf->hid);
   // Connection hidden -> output
@@ -91,14 +91,15 @@ void load_network_from_header(NetworkController *net, NetworkControllerConf cons
 
 // Set the inputs of the controller network with given floats
 void set_network_input(NetworkController *net, float inputs[]) {
-    net->in[0] = inputs[6];
-    net->in[1] = inputs[7];
-    net->in[2] = inputs[8];
-    net->in[3] = inputs[0] * 3;
-    net->in[4] = inputs[1] * 3;
-    net->in[5] = inputs[2] * 3;
-    net->in[6] = inputs[3];
-    net->in[7] = inputs[4];
+    // net->in[0] = inputs[6];
+    // net->in[1] = inputs[7];
+    // net->in[2] = inputs[8];
+    // net->in[3] = inputs[0] * 3;
+    // net->in[4] = inputs[1] * 3;
+    // net->in[5] = inputs[2] * 3;
+    // net->in[6] = inputs[3];
+    // net->in[7] = inputs[4];
+    net->in = inputs;
 }
 
 
@@ -107,13 +108,17 @@ void set_network_input(NetworkController *net, float inputs[]) {
 // TODO: but we still need to check the size of the array we put in net->in
 float* forward_network(NetworkController *net) {
   forward_connection_real(net->inhid, net->hid->x, net->in);
-//   forward_connection(net->hidhid, net->hid->x, net->hid->s);
+//   printf("\n");
+  forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
+  for (int i = 0; i < net->hid_size; i++) {
+    printf("%f ", net->hid->i[i]);
+  }
+//   for (int i = 0; i < net->hid_size; i++) {
+//     printf("%f ", net->hid->s[i]);
+//   }
 //   this could be initialized at init, is faster
   float out_spikes[net->out_size];
-//   for (int i = 0; i < net->hid_size; i++) {
-//     printf("%d ", (int) net->hid->s[i]);
-//   }
   for (int i = 0; i < net->out_size; i++) {
     out_spikes[i] = 0.0f;
   }
