@@ -81,15 +81,15 @@ void serialParseMessageIn(void)
 
 void setInputMessage(void)
 {
-    inputs[0] = myserial_control_in.roll_gyro * 0.01;
-    inputs[1] = myserial_control_in.pitch_gyro * 0.01;
-    inputs[2] = myserial_control_in.yaw_gyro * 0.01;
-    inputs[3] = myserial_control_in.x_acc;
-    inputs[4] = myserial_control_in.y_acc;
-    inputs[5] = myserial_control_in.z_acc * 0.3;
-    inputs[6] = myserial_control_in.roll * 0.03;
-    inputs[7] = myserial_control_in.pitch * 0.03;
-    inputs[8] = myserial_control_in.yaw * 0.03;
+    inputs[3] = myserial_control_in.roll_gyro * 0.03;
+    inputs[4] = myserial_control_in.pitch_gyro * 0.03;
+    inputs[5] = myserial_control_in.yaw_gyro * 0.03;
+    inputs[6] = myserial_control_in.x_acc * 0.05;
+    inputs[7] = myserial_control_in.y_acc * 0.05;
+    // inputs[5] = myserial_control_in.z_acc * 0.3;
+    inputs[0] = myserial_control_in.roll * 0.03;
+    inputs[1] = myserial_control_in.pitch * 0.03;
+    inputs[2] = myserial_control_in.yaw * 0.03;
     // inputs = [gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target];
     // DEBUG_serial.printf("%f, %f, %f, %f, %f, %f, %f, %f\n", inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7]);
     set_network_input(&controller, inputs);
@@ -102,8 +102,8 @@ void setOutputMessage(void)
     myserial_control_out.torque_z = saturateSignedInt16(controller.out[2] * 20000);
     // myserial_control_out.x_integ = roll_integ * 20;
     // myserial_control_out.y_integ = pitch_integ * 20;
-    myserial_control_out.x_integ = saturateSignedInt16(controller.integ_out[1] * -20000);
-    myserial_control_out.y_integ = saturateSignedInt16(controller.integ_out[0] * -20000);
+    // mserial_control_out.x_integ = saturateSignedInt16(controller.integ_out[1] * -20000);
+    // myserial_control_out.y_integ = saturateSignedInt16(controller.integ_out[0] * -20000);
 }
 
 void sendCrazyflie(void)
@@ -175,7 +175,8 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(9, 100, 59, 4, 88, 3);
+    // controller = build_network(9, 100, 59, 4, 88, 3);
+    controller = build_network(8, 88, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 

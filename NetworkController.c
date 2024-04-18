@@ -111,9 +111,9 @@ float* forward_network(NetworkController *net) {
 //   printf("\n");
   forward_connection(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
-  for (int i = 0; i < net->hid_size; i++) {
-    printf("%f ", net->hid->i[i]);
-  }
+//   for (int i = 0; i < net->hid_size; i++) {
+//     printf("%f ", net->hid->i[i]);
+//   }
 //   for (int i = 0; i < net->hid_size; i++) {
 //     printf("%f ", net->hid->s[i]);
 //   }
