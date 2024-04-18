@@ -1,6 +1,8 @@
 from string import Template
 import torch
 
+# torch.set_printoptions(precision=2, sci_mode=False, profile="full", linewidth=160)
+
 def create_from_template(template_filename, output_filename, params):
     '''
     Take template file and the parameters to be exchanged, fill in and write to file.
@@ -47,10 +49,10 @@ def create_connection_from_template_with_weights(name, weights):
 
 def create_neuron_from_template(name, state_dict, state_name, sigmoid=False, mask=None):
     
-    if mask is None:
-        hidden_size = state_dict[f"{state_name}.leak_i"].size()[0]
-    else:
-        hidden_size = state_dict[f"{state_name}.leak_i"].size()[0] - sum(mask==0)
+    # if mask is None:
+    hidden_size = state_dict[f"{state_name}.leak_i"].size()[0]
+    # else:
+    #     hidden_size = state_dict[f"{state_name}.leak_i"].size()[0] - sum(mask==0)
     d_i_string = '{'
     d_v_string = '{'
     t_h_string = '{'
@@ -76,6 +78,9 @@ def create_neuron_from_template(name, state_dict, state_name, sigmoid=False, mas
     d_i_string = d_i_string[:-2] + '}'
     d_v_string = d_v_string[:-2] + '}'
     t_h_string = t_h_string[:-2] + '}'
+
+    if mask is not None:
+        hidden_size = state_dict[f"{state_name}.leak_i"].size()[0] - sum(mask==0)
     params = {
         'name': name,
         'hidden_size': f'{hidden_size}',

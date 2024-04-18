@@ -8,17 +8,20 @@ MASK = True
 
 if __name__ == "__main__": 
     # Load network
-    att_name = "distinctive-capybara-169"
+    # att_name = "absurd-snow-174"
+    # att_name = "distinctive-capybara-169"
     att_name = "abundant-moon-184"
     # att_name = "lambent-paper-185"
+    # att_name = "alight-ox-189"
     
     torque_name = "warm-armadillo-179"
+    # torque_name = "lucky-paper-1
+    # torque_name = "burning-darling-192"
+
     dirname = os.getcwd()
     att_folder = os.path.abspath(os.path.join(dirname, f"../ultrasonic-snn/runs/{att_name}"))
-    torque_folder = os.path.abspath(os.path.join(dirname, f"../ultrasonic-snn/runs/{torque_name}"))
-    # attitude_state_dict = torch.load(f"param/models/model_attitude_worldly_forest.pt", map_location=torch.device('cpu'))
     attitude_state_dict = torch.load(os.path.join(att_folder, "model.pt"), map_location=torch.device('cpu'))
-    # torque_state_dict = torch.load(f"param/models/model_torque_scarlet_durian.pt", map_location=torch.device('cpu'))
+    torque_folder = os.path.abspath(os.path.join(dirname, f"../ultrasonic-snn/runs/{torque_name}"))
     torque_state_dict = torch.load(os.path.join(torque_folder, "model.pt"), map_location=torch.device('cpu'))
 
     if "l1.synapse_ff.weight" in torque_state_dict:
@@ -106,7 +109,7 @@ if __name__ == "__main__":
                                         [-(5/3), 0],
                                         [0, (5/3)],
                                         [(5/3), 0]], dtype=torch.float)
-    new_weights = new_weights * 0.003
+    new_weights = new_weights * 0.005
     create_connection_from_template_with_weights('hidinteg', new_weights)
 
     ################### test_controller_integ_file

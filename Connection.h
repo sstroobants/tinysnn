@@ -1,5 +1,7 @@
 #pragma once
 
+#include "arm_math.h"
+
 // Struct that defines a connection between two layers of neurons, or input/output
 typedef struct Connection {
   // Connection shape: (post, pre)
@@ -9,6 +11,7 @@ typedef struct Connection {
   // TODO: is this the best way to go? Would like to be able to do w[i][j]
   //  Check this with Erik
   float *w;
+  arm_matrix_instance_f32 W;
 } Connection;
 
 // Struct that holds the configuration (weights) of a connection
@@ -44,3 +47,6 @@ void forward_connection(Connection *c, float x[], float const s[]);
 // Forward
 // Spikes as floats to deal with real-valued inputs
 void forward_connection_real(Connection *c, float x[], float const s[]);
+
+// Forward using arm_math.h
+void forward_connection_fast(Connection *c, float x[], float const s[]);

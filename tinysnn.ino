@@ -81,15 +81,15 @@ void serialParseMessageIn(void)
 
 void setInputMessage(void)
 {
-    inputs[0] = myserial_control_in.roll_gyro * 0.01;
-    inputs[1] = myserial_control_in.pitch_gyro * 0.01;
-    inputs[2] = myserial_control_in.yaw_gyro * 0.01;
+    inputs[0] = myserial_control_in.roll_gyro * 0.01f;
+    inputs[1] = myserial_control_in.pitch_gyro * 0.01f;
+    inputs[2] = myserial_control_in.yaw_gyro * 0.01f;
     inputs[3] = myserial_control_in.x_acc;
     inputs[4] = myserial_control_in.y_acc;
-    inputs[5] = myserial_control_in.z_acc * 0.3;
-    inputs[6] = myserial_control_in.roll * 0.03;
-    inputs[7] = myserial_control_in.pitch * 0.03;
-    inputs[8] = myserial_control_in.yaw * 0.03;
+    inputs[5] = myserial_control_in.z_acc * 0.3f;
+    inputs[6] = myserial_control_in.roll * 0.03f;
+    inputs[7] = myserial_control_in.pitch * 0.03f;
+    inputs[8] = myserial_control_in.yaw * 0.03f;
     // inputs = [gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, roll_target, pitch_target];
     // DEBUG_serial.printf("%f, %f, %f, %f, %f, %f, %f, %f\n", inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7]);
     set_network_input(&controller, inputs);
@@ -175,7 +175,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(9, 100, 59, 4, 88, 3);
+    controller = build_network(9, 100, 80, 4, 100, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
@@ -205,6 +205,7 @@ void loop(void)
           DEBUG_serial.printf("Amounts to %i per inference\n", timer_network_outer/n_forward_passes);
           DEBUG_serial.printf("Receiving took %i ms for %i forward passes\n", timer_receive_outer / 1000, n_forward_passes);
           DEBUG_serial.printf("Sending took %i ms for %i forward passes\n", timer_send_outer / 1000, n_forward_passes);
+          DEBUG_serial.printf("Last control output x:%d, y:%d, z:%d\n", myserial_control_out.torque_x, myserial_control_out.torque_y, myserial_control_out.torque_z);
           // DEBUG_serial.printf("CPU temp is %f\n", tempmonGetTemp());
           serial_cf_received_packets = 0;
           timer_count_main = 0;

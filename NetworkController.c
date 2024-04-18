@@ -155,24 +155,27 @@ void set_network_input(NetworkController *net, float inputs[]) {
     net->hid2_in[0] = inputs[6]; // roll command
     net->hid2_in[1] = inputs[7]; // pitch command
     net->hid2_in[2] = inputs[8]; // yaw_rate command
-    net->hid2_in[3] = inputs[0] * 3;
-    net->hid2_in[4] = inputs[1] * 3;
-    net->hid2_in[5] = inputs[2] * 3;
+    net->hid2_in[3] = inputs[0] * 3.0f;
+    net->hid2_in[4] = inputs[1] * 3.0f;
+    net->hid2_in[5] = inputs[2] * 3.0f;
 }
 
 
 // Forward network and call forward functions for children
 // Encoding and decoding inside
 float* forward_network(NetworkController *net) {
-  forward_connection_real(net->inenc, net->enc->x, net->in);
+//   forward_connection_real(net->inenc, net->enc->x, net->in);
+  forward_connection_fast(net->inenc, net->enc->x, net->in);
   forward_neuron(net->enc);
-  forward_connection(net->enchid, net->hid->x, net->enc->s);
-  forward_connection(net->hidhid, net->hid->x, net->hid->s);
+//   forward_connection(net->enchid, net->hid->x, net->enc->s);
+  forward_connection_fast(net->enchid, net->hid->x, net->enc->s);
+  forward_connection_fast(net->hidhid, net->hid->x, net->hid->s);
   forward_neuron(net->hid);
   for (int i = 0; i < net->hid_size; i++) {
       net->integ_in[i] = net->hid->s[i];
   }
-  forward_connection_real(net->hidinteg, net->integ->x, net->integ_in);
+//   forward_connection_real(net->hidinteg, net->integ->x, net->integ_in);
+  forward_connection_fast(net->hidinteg, net->integ->x, net->integ_in);
 //   net->integ_out[0] = net->integ->x[0] * 1;
 //   net->integ_out[1] = net->integ->x[1] * 1;
 //   net->integ_out[0] = net->integ_in[net->hid_size];
@@ -187,20 +190,24 @@ float* forward_network(NetworkController *net) {
       net->hid2_in[i+6] = net->hid->s[i];
   }
 //   Run through torque network twice
-  forward_connection_real(net->hidhid2, &torque_in, net->hid2_in);
-  for (int i = 0; i < 2; i++) {
+//   forward_connection_real(net->hidhid2, &torque_in, net->hid2_in);
+//   printf("real: %f\n", torque_in[0]);
+//   torque_in[0] = 0.0f;
+  forward_connection_fast(net->hidhid2, &torque_in, net->hid2_in);
+//   printf("fast: %f\n", torque_in[0]);
+  for (int i = 0; i < 3; i++) {
     for (int j = 0; j < net->hid2_size; j++) {
       net->hid2->x[j] = net->hid2->x[j] + torque_in[j];
     }
-    forward_connection(net->hid2hid2, net->hid2->x, net->hid2->s);
+    forward_connection_fast(net->hid2hid2, net->hid2->x, net->hid2->s);
     forward_neuron(net->hid2);
   }
   for (int i = 0; i < net->out_size; i++) {
     net->out[i] = 0.0f;
   }
-  forward_connection(net->hid2out, net->out, net->hid2->s);
-  net->integ_out[0] = net->integ_out[0] * 0.99 + (net->integ->s[0] - net->integ->s[2]) * (1.0 - 0.99);
-  net->integ_out[1] = net->integ_out[1] * 0.99 + (net->integ->s[1] - net->integ->s[3]) * (1.0 - 0.99);
+  forward_connection_fast(net->hid2out, net->out, net->hid2->s);
+  net->integ_out[0] = net->integ_out[0] * 0.95f + (net->integ->s[0] - net->integ->s[2]) * (1.0f - 0.95f);
+  net->integ_out[1] = net->integ_out[1] * 0.95f + (net->integ->s[1] - net->integ->s[3]) * (1.0f - 0.95f);
   return net->out;
 }
 

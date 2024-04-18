@@ -16,6 +16,11 @@ Connection build_connection(int const pre, int const post) {
 
   // Allocate memory for weight array
   c.w = calloc(post * pre, sizeof(*c.w));
+  c.W = (arm_matrix_instance_f32) {
+    .numRows = post,
+    .numCols = pre,
+    .pData = c.w
+  };
 
   return c;
 }
@@ -28,6 +33,7 @@ void init_connection(Connection *c) {
       c->w[i * c->pre + j] = rand() / (float)RAND_MAX;
     }
   }
+  arm_mat_init_f32(&c->W, c->post, c->pre, c->w);
 }
 
 // Reset connection
@@ -50,6 +56,7 @@ void load_connection_from_header(Connection *c, ConnectionConf const *conf) {
       c->w[i * c->pre + j] = conf->w[i * c->pre + j];
     }
   }
+  arm_mat_init_f32(&c->W, c->post, c->pre, c->w);
 }
 
 // Free allocated memory for connection
@@ -65,7 +72,8 @@ void forward_connection(Connection *c, float x[], float const s[]) {
   // Loop over weights and multiply with spikes
   for (int i = 0; i < c->post; i++) {
     for (int j = 0; j < c->pre; j++) {
-      if (s[j] != 0.0f) {
+    //   printf("s[%d]: %f\n", j, s[j]);
+      if (s[j] > 0.0f) {
         x[i] += c->w[i * c->pre + j];
       }
     }
@@ -80,3 +88,48 @@ void forward_connection_real(Connection *c, float x[], float const s[]) {
         }
     }
 }
+
+void forward_connection_fast(Connection *c, float x[], float const s[]) {
+    arm_matrix_instance_f32 W;
+    arm_matrix_instance_f32 S;
+    arm_matrix_instance_f32 X;
+    arm_matrix_instance_f32 X_copy;
+
+    // Create a temporary copy of x
+    float x_copy[c->post];
+    memcpy(x_copy, x, c->post * sizeof(float));
+
+    // arm_mat_init_f32(&W, c->post, c->pre, c->w);
+    // arm_mat_init_f32(&S, c->pre, 1, s);
+    // arm_mat_init_f32(&X, c->post, 1, x);
+
+    arm_mat_init_f32(&W, c->post, c->pre, c->w);
+    arm_mat_init_f32(&S, c->pre, 1, s);
+    arm_mat_init_f32(&X, c->post, 1, x);
+    arm_mat_init_f32(&X_copy, c->post, 1, x_copy);
+
+    arm_mat_mult_f32(&W, &S, &X);
+    // printf("Success: %d\n", succ);
+
+    // add x and x_copy
+    arm_mat_add_f32(&X,&X_copy, &X);
+}
+
+// void forward_connection_fast(Connection *c, float x[], float const s[]) {
+//     arm_matrix_instance_q15 W;
+//     arm_matrix_instance_q15 S;
+//     arm_matrix_instance_q15 X;
+
+//     // Convert weight array from float to q15
+//     // q15_t q15_w[c->post * c->pre];
+//     // for (int i = 0; i < c->post * c->pre; i++) {
+//     //     q15_w[i] = arm_float_to_q15(c->w[i]);
+//     // }
+
+//     arm_mat_init_q15(&W, c->post, c->pre, c->w);
+//     arm_mat_init_q15(&S, c->pre, 1, s);
+//     arm_mat_init_q15(&X, c->post, 1, x);
+
+//     q15_t * pState = (q15_t *)malloc(c->post * sizeof(q15_t));
+//     arm_mat_mult_q15(&W, &S, &X, pState);
+// }
