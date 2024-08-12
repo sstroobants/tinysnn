@@ -12,7 +12,7 @@ def create_from_template(template_filename, output_filename, params):
         src = Template(f.read())
         result = src.substitute(params)
         # print(result)
-        with open(output_filename, 'w') as f_out:
+        with open(output_filename, "w+") as f_out:
             f_out.write(result)
 
 def create_connection_from_template(name, state_dict, state_name, mask1=None, mask2=None):

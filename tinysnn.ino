@@ -175,13 +175,19 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(9, 100, 59, 4, 88, 3);
+    controller = build_network(9, 150, 101, 4, 89, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
 
     // Load network parameters from header file and reset
     DEBUG_serial.write("Loading network\n");
+    DEBUG_serial.write("Attitude: ");
+    DEBUG_serial.write(att_net);
+    DEBUG_serial.write("\n");
+    DEBUG_serial.write("Torque: ");
+    DEBUG_serial.write(torque_net);
+    DEBUG_serial.write("\n");
     load_network_from_header(&controller, &conf);
     DEBUG_serial.write("Resetting\n");
     reset_network(&controller);

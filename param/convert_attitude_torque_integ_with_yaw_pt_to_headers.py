@@ -1,8 +1,10 @@
 import torch
 import numpy as np
 import os
+import wandb
 
 from convert_pt_utils import create_from_template, create_connection_from_template, create_neuron_from_template, create_connection_from_template_with_weights, create_softreset_integrator_from_template, create_connection_from_template_with_weights
+from wandb_utils import find_wandb_run_by_name, download_model_for_run
 
 MASK = True
 
@@ -13,16 +15,35 @@ if __name__ == "__main__":
     att_name = "abundant-moon-184"
     # att_name = "lambent-paper-185"
     # att_name = "alight-ox-189"
+    att_name = "vague-dragon-304"
     
     torque_name = "warm-armadillo-179"
     # torque_name = "lucky-paper-1
     # torque_name = "burning-darling-192"
+    # torque_name = "earthy-capybara-285"
+    # torque_name = "peachy-sponge-291"
 
+
+    # Replace with your specific project path
+    project_path = "sstroobants/snn_control"
+
+    # Get attitude model
     dirname = os.getcwd()
-    att_folder = os.path.abspath(os.path.join(dirname, f"../ultrasonic-snn/runs/{att_name}"))
-    attitude_state_dict = torch.load(os.path.join(att_folder, "model.pt"), map_location=torch.device('cpu'))
-    torque_folder = os.path.abspath(os.path.join(dirname, f"../ultrasonic-snn/runs/{torque_name}"))
-    torque_state_dict = torch.load(os.path.join(torque_folder, "model.pt"), map_location=torch.device('cpu'))
+    run_folder = "param/models"
+    att_folder = os.path.abspath(os.path.join(dirname, f"{run_folder}/{att_name}"))
+    if not os.path.exists(att_folder):
+        print(f"Attitude network {att_name} not yet locally available, downloading from WandB")
+        target_run = find_wandb_run_by_name(att_name, project_path)
+        download_model_for_run(target_run)
+    attitude_state_dict = torch.load(os.path.join(att_folder, "model.pt"), map_location=torch.device('cpu'), weights_only=True)
+
+    # Get torque model
+    torque_folder = os.path.abspath(os.path.join(dirname, f"{run_folder}/{torque_name}"))
+    if not os.path.exists(torque_folder):
+        print(f"Torque network {torque_name} not yet locally available, downloading from WandB")
+        target_run = find_wandb_run_by_name(torque_name, project_path)
+        download_model_for_run(target_run)
+    torque_state_dict = torch.load(os.path.join(torque_folder, "model.pt"), map_location=torch.device('cpu'), weights_only=True)
 
     if "l1.synapse_ff.weight" in torque_state_dict:
         rec = True
@@ -33,9 +54,12 @@ if __name__ == "__main__":
     attitude_layer_name = 'l2.synapse_ff.weight' if rec else 'l2.synapse.weight'
     torque_layer_name = 'l1.synapse_ff.weight' if rec else 'l1.synapse.weight'
     if MASK:
-        attitude_mask = np.loadtxt(os.path.join(att_folder, "mask_2.csv"), delimiter=',')
-        torque_mask = np.loadtxt(os.path.join(torque_folder, "mask.csv"), delimiter=',')
-        # torque_mask = np.ones(torque_state_dict[torque_layer_name].size()[0])
+        try:
+            attitude_mask = np.loadtxt(os.path.join(f"{dirname}/../crazyflie_snn/runs/{att_name}", "mask_2.csv"), delimiter=',')
+            torque_mask = np.loadtxt(os.path.join(f"{dirname}/../crazyflie_snn/runs/{torque_name}", "mask.csv"), delimiter=',')
+            # torque_mask = np.ones(torque_state_dict[torque_layer_name].size()[0])
+        except ValueError:
+            print("One of the masks does not exist. Use the pruning files in 'crazyflie_snn' to create these.")
     else:
         attitude_mask = np.ones(attitude_state_dict[attitude_layer_name].size()[0])
         torque_mask = np.ones(torque_state_dict[torque_layer_name].size()[0])
@@ -57,9 +81,15 @@ if __name__ == "__main__":
     attitude_hidden_size = attitude_state_dict["l2.neuron.leak_i"].size()[0] - n_masked_neurons_attitude
 
     ############# -- CONTROLLER -- #################################
+    # Create the directory if it does not exist
+    output_directory = "param/controller"
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
     if rec:
         controller_conf_params = {
+            'att_name': att_name,
+            'torque_name': torque_name,
             'input_size': attitude_state_dict["l1.synapse.weight"].size()[1] + 3,
             'encoding_size': attitude_state_dict["l1.synapse.weight"].size()[0],
             'hidden_size': attitude_hidden_size,
@@ -70,6 +100,8 @@ if __name__ == "__main__":
         }
     else:
         controller_conf_params = {
+            'att_name': att_name,
+            'torque_name': torque_name,
             'input_size': attitude_state_dict["l1.synapse.weight"].size()[1] + 3,
             'encoding_size': attitude_state_dict["l1.synapse.weight"].size()[0],
             'hidden_size': attitude_hidden_size,

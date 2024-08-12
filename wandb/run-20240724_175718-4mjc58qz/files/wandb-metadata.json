@@ -1,0 +1,107 @@
+{
+    "os": "Linux-6.5.0-44-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "heartbeatAt": "2024-07-24T15:57:20.951601",
+    "startedAt": "2024-07-24T15:57:18.618144",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/sstroobants/tinysnn/",
+        "commit": "316e53d0424870fe7ae36bf70aee08a70d2ea926"
+    },
+    "email": "stein.stroobants@live.nl",
+    "root": "/home/sstroobants/Code/tinysnn",
+    "host": "clint",
+    "username": "sstroobants",
+    "executable": "/usr/bin/python3",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 3600.075166666667,
+        "min": 800.0,
+        "max": 5000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3599.994,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.144,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.167,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.168,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3599.984,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.466,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3599.992,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.308,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3599.554,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.161,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3600.129,
+            "min": 800.0,
+            "max": 5000.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 466.94725799560547,
+            "used": 122.7301025390625
+        }
+    },
+    "gpu": "NVIDIA GeForce GTX 1650 Ti",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1650 Ti",
+            "memory_total": 4294967296
+        }
+    ],
+    "memory": {
+        "total": 15.360027313232422
+    }
+}

@@ -1,0 +1,29 @@
+2024-07-24 17:57:18,620 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Current SDK version is 0.17.5
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Configure stats pid to 12482
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Loading settings from /home/sstroobants/.config/wandb/settings
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Loading settings from /home/sstroobants/Code/tinysnn/wandb/settings
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_setup.py:_flush():76] Applying login settings: {'api_key': '***REDACTED***'}
+2024-07-24 17:57:18,621 INFO    MainThread:12482 [wandb_init.py:_log_setup():529] Logging user logs to /home/sstroobants/Code/tinysnn/wandb/run-20240724_175718-4mjc58qz/logs/debug.log
+2024-07-24 17:57:18,622 INFO    MainThread:12482 [wandb_init.py:_log_setup():530] Logging internal logs to /home/sstroobants/Code/tinysnn/wandb/run-20240724_175718-4mjc58qz/logs/debug-internal.log
+2024-07-24 17:57:18,622 INFO    MainThread:12482 [wandb_init.py:init():569] calling init triggers
+2024-07-24 17:57:18,622 INFO    MainThread:12482 [wandb_init.py:init():576] wandb.init called with sweep_config: {}
+config: {}
+2024-07-24 17:57:18,622 INFO    MainThread:12482 [wandb_init.py:init():619] starting backend
+2024-07-24 17:57:18,622 INFO    MainThread:12482 [wandb_init.py:init():623] setting up manager
+2024-07-24 17:57:18,630 INFO    MainThread:12482 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-07-24 17:57:18,639 INFO    MainThread:12482 [wandb_init.py:init():631] backend started and connected
+2024-07-24 17:57:18,656 INFO    MainThread:12482 [wandb_init.py:init():720] updated telemetry
+2024-07-24 17:57:18,664 INFO    MainThread:12482 [wandb_init.py:init():753] communicating run to backend with 90.0 second timeout
+2024-07-24 17:57:19,161 INFO    MainThread:12482 [wandb_run.py:_on_init():2435] communicating current version
+2024-07-24 17:57:19,294 INFO    MainThread:12482 [wandb_run.py:_on_init():2444] got version response 
+2024-07-24 17:57:19,294 INFO    MainThread:12482 [wandb_init.py:init():804] starting run threads in backend
+2024-07-24 17:57:21,052 INFO    MainThread:12482 [wandb_run.py:_console_start():2413] atexit reg
+2024-07-24 17:57:21,053 INFO    MainThread:12482 [wandb_run.py:_redirect():2255] redirect: wrap_raw
+2024-07-24 17:57:21,053 INFO    MainThread:12482 [wandb_run.py:_redirect():2320] Wrapping output streams.
+2024-07-24 17:57:21,053 INFO    MainThread:12482 [wandb_run.py:_redirect():2345] Redirects installed.
+2024-07-24 17:57:21,055 INFO    MainThread:12482 [wandb_init.py:init():847] run started, returning control to user process
+2024-07-24 18:01:21,902 WARNING MsgRouterThr:12482 [router.py:message_loop():77] message_loop has been closed
