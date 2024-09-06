@@ -175,7 +175,7 @@ void setup(void)
 
     //////////////////Initialize controller network
     DEBUG_serial.write("Build network\n");
-    controller = build_network(9, 150, 101, 4, 89, 3);
+    controller = build_network(9, 150, 101, 4, 78, 3);
     DEBUG_serial.write("Init network\n");
     init_network(&controller);
 
@@ -253,6 +253,5 @@ void loop(void)
 
         // Store output message to be sent back to CF
         setOutputMessage();
-
     }
 }

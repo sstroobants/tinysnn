@@ -20,9 +20,18 @@ if __name__ == "__main__":
     torque_name = "warm-armadillo-179"
     # torque_name = "lucky-paper-1
     # torque_name = "burning-darling-192"
-    # torque_name = "earthy-capybara-285"
+    torque_name = "earthy-capybara-285"
     # torque_name = "peachy-sponge-291"
-
+    # torque_name = "lively-vortex-308"
+    # torque_name = "denim-firefly-306"
+    # torque_name = "apricot-yogurt-310"
+    # torque_name = "revived-night-309"
+    torque_name = "faithful-cloud-311"
+    torque_name = "misunderstood-snow-312"
+    torque_name = "lilac-wood-313"
+    torque_name = "desert-snow-318"
+    torque_name = "crimson-dew-317"
+    # torque_name = "sandy-hill-316"
 
     # Replace with your specific project path
     project_path = "sstroobants/snn_control"

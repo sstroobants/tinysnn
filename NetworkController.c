@@ -195,7 +195,7 @@ float* forward_network(NetworkController *net) {
 //   torque_in[0] = 0.0f;
   forward_connection_fast(net->hidhid2, &torque_in, net->hid2_in);
 //   printf("fast: %f\n", torque_in[0]);
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 1; i++) {
     for (int j = 0; j < net->hid2_size; j++) {
       net->hid2->x[j] = net->hid2->x[j] + torque_in[j];
     }
